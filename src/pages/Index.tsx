@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
 import { FarmerCard } from "@/components/FarmerCard";
 import { Header } from "@/components/Header";
+import { CartSidebar } from "@/components/CartSidebar";
+import { CartProvider } from "@/contexts/CartContext";
 import heroImage from "@/assets/hero-mangoes.jpg";
 import alphonsoImage from "@/assets/alphonso-mango.jpg";
 import kesarImage from "@/assets/kesar-mango.jpg";
@@ -69,8 +71,10 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <CartProvider>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <CartSidebar />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-warm-cream to-background">
@@ -210,7 +214,8 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </CartProvider>
   );
 };
 

@@ -2,6 +2,8 @@ import { Heart, MapPin, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   id: string;
@@ -19,6 +21,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ 
+  id,
   name, 
   variety, 
   price, 
@@ -27,6 +30,23 @@ export function ProductCard({
   inStock, 
   organic = false 
 }: ProductCardProps) {
+  const { addItem, setIsCartOpen } = useCart();
+
+  const handleAddToCart = () => {
+    addItem({
+      id,
+      name,
+      variety,
+      price,
+      image,
+      farmer: {
+        name: farmer.name,
+        location: farmer.location
+      }
+    });
+    toast.success(`${name} added to cart!`);
+    setIsCartOpen(true);
+  };
   return (
     <Card className="group overflow-hidden shadow-card hover:shadow-warm transition-all duration-300 hover:-translate-y-1">
       <div className="relative overflow-hidden">
@@ -82,6 +102,7 @@ export function ProductCard({
             <Button 
               disabled={!inStock}
               className="bg-gradient-tropical hover:opacity-90 transition-opacity"
+              onClick={handleAddToCart}
             >
               Add to Cart
             </Button>
