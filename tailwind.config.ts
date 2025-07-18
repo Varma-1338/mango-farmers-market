@@ -108,15 +108,13 @@ export default {
 				'slide-up': 'slideUp 0.8s ease-out',
 			},
 			keyframes: {
-				...{
-					'accordion-down': {
-						from: { height: '0' },
-						to: { height: 'var(--radix-accordion-content-height)' }
-					},
-					'accordion-up': {
-						from: { height: 'var(--radix-accordion-content-height)' },
-						to: { height: '0' }
-					}
+				'accordion-down': {
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
+				},
+				'accordion-up': {
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
 				},
 				fadeIn: {
 					'0%': { opacity: '0', transform: 'translateY(20px)' },

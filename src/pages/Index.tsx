@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { FarmerCard } from "@/components/FarmerCard";
 import { Header } from "@/components/Header";
 import { CartSidebar } from "@/components/CartSidebar";
-import { CartProvider } from "@/contexts/CartContext";
+
 import heroImage from "@/assets/hero-mangoes.jpg";
 import alphonsoImage from "@/assets/alphonso-mango.jpg";
 import kesarImage from "@/assets/kesar-mango.jpg";
@@ -71,8 +71,7 @@ const Index = () => {
   ];
 
   return (
-    <CartProvider>
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
         <Header />
         <CartSidebar />
       
@@ -214,8 +213,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
-      </div>
-    </CartProvider>
+    </div>
   );
 };
 
