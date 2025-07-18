@@ -49,7 +49,14 @@ export function Header() {
               )}
             </Button>
             
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => {
+                // TODO: Open auth dialog or navigate to login page
+                alert("User authentication coming soon!");
+              }}
+            >
               <User className="h-5 w-5" />
             </Button>
             

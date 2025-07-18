@@ -88,7 +88,15 @@ const Index = () => {
                 Experience the authentic taste of premium mangoes sourced directly from certified farmers across India.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-gradient-tropical hover:opacity-90 transition-opacity">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-tropical hover:opacity-90 transition-opacity"
+                  onClick={() => {
+                    document.getElementById('featured-products')?.scrollIntoView({ 
+                      behavior: 'smooth' 
+                    });
+                  }}
+                >
                   Shop Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button variant="outline" size="lg">
@@ -137,7 +145,7 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16">
+      <section id="featured-products" className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">Featured Mangoes</h2>
