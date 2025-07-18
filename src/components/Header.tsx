@@ -2,9 +2,13 @@ import { Search, ShoppingCart, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const { getTotalItems, setIsCartOpen } = useCart();
+  const { signOut, profile, isAdmin } = useAuth();
+  const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
@@ -52,12 +56,19 @@ export function Header() {
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={() => {
-                // TODO: Open auth dialog or navigate to login page
-                alert("User authentication coming soon!");
-              }}
+              onClick={() => navigate('/dashboard')}
+              title={`${profile?.full_name || profile?.email} (${isAdmin ? 'Admin' : 'User'})`}
             >
               <User className="h-5 w-5" />
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={signOut}
+              className="hidden sm:flex"
+            >
+              Sign Out
             </Button>
             
             <Button variant="ghost" size="icon" className="md:hidden">
