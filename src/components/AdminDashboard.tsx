@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Settings, Package, Users, MessageSquare } from 'lucide-react';
+import { Settings, Package, Users, MessageSquare, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { FarmerManagement } from './FarmerManagement';
 
 export function AdminDashboard() {
   const [productSettings, setProductSettings] = useState({
@@ -16,6 +17,8 @@ export function AdminDashboard() {
     kesarAvailable: true,
     hadenAvailable: false,
   });
+  
+  const [currentView, setCurrentView] = useState<'dashboard' | 'farmers'>('dashboard');
 
   const handleStockUpdate = (product: string, value: number) => {
     setProductSettings(prev => ({
@@ -32,6 +35,25 @@ export function AdminDashboard() {
     }));
     toast.success(`${product} ${available ? 'enabled' : 'disabled'}`);
   };
+
+  if (currentView === 'farmers') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <h2 className="text-2xl font-bold">Farmer Management</h2>
+        </div>
+        <FarmerManagement />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -216,7 +238,7 @@ export function AdminDashboard() {
             <Button onClick={() => toast.info('Feature coming soon!')}>
               View All Orders
             </Button>
-            <Button variant="outline" onClick={() => toast.info('Feature coming soon!')}>
+            <Button variant="outline" onClick={() => setCurrentView('farmers')}>
               Manage Farmers
             </Button>
             <Button variant="outline" onClick={() => toast.info('Feature coming soon!')}>
