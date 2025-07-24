@@ -8,6 +8,8 @@ import { Settings, Package, Users, MessageSquare, ArrowLeft } from 'lucide-react
 import { toast } from 'sonner';
 import { FarmerManagement } from './FarmerManagement';
 import { ProductManagement } from './ProductManagement';
+import { OrderManagement } from './OrderManagement';
+import { MessageManagement } from './MessageManagement';
 
 export function AdminDashboard() {
   const [productSettings, setProductSettings] = useState({
@@ -19,7 +21,7 @@ export function AdminDashboard() {
     hadenAvailable: false,
   });
   
-  const [currentView, setCurrentView] = useState<'dashboard' | 'farmers' | 'products'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'farmers' | 'products' | 'orders' | 'messages'>('dashboard');
 
   const handleStockUpdate = (product: string, value: number) => {
     setProductSettings(prev => ({
@@ -71,6 +73,44 @@ export function AdminDashboard() {
           <h2 className="text-2xl font-bold">Product Management</h2>
         </div>
         <ProductManagement />
+      </div>
+    );
+  }
+
+  if (currentView === 'orders') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <h2 className="text-2xl font-bold">Order Management</h2>
+        </div>
+        <OrderManagement />
+      </div>
+    );
+  }
+
+  if (currentView === 'messages') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <h2 className="text-2xl font-bold">Message Management</h2>
+        </div>
+        <MessageManagement />
       </div>
     );
   }
@@ -140,7 +180,7 @@ export function AdminDashboard() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button onClick={() => toast.info('Feature coming soon!')}>
+            <Button onClick={() => setCurrentView('orders')}>
               View All Orders
             </Button>
             <Button variant="outline" onClick={() => setCurrentView('products')}>
@@ -149,13 +189,12 @@ export function AdminDashboard() {
             <Button variant="outline" onClick={() => setCurrentView('farmers')}>
               Manage Farmers
             </Button>
-            <Button variant="outline" onClick={() => toast.info('Feature coming soon!')}>
+            <Button variant="outline" onClick={() => setCurrentView('messages')}>
               View Messages
             </Button>
           </div>
         </CardContent>
       </Card>
-
     </div>
   );
 }
