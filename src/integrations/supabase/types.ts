@@ -59,6 +59,56 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          farmer_id: string | null
+          id: string
+          image_url: string | null
+          is_available: boolean
+          name: string
+          price: number
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          farmer_id?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          name: string
+          price: number
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          farmer_id?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          name?: string
+          price?: number
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_farmer_id_fkey"
+            columns: ["farmer_id"]
+            isOneToOne: false
+            referencedRelation: "farmers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
