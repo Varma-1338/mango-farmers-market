@@ -2,6 +2,8 @@ import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { Badge } from "@/components/ui/badge";
+import { CheckoutModal, OrderSuccessModal } from "@/components/CheckoutModal";
+import { useState } from "react";
 
 export function CartSidebar() {
   const { 
@@ -13,6 +15,13 @@ export function CartSidebar() {
     isCartOpen, 
     setIsCartOpen 
   } = useCart();
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+
+  const handleCheckoutSuccess = () => {
+    setIsSuccessOpen(true);
+  };
 
   if (!isCartOpen) return null;
 
@@ -128,6 +137,7 @@ export function CartSidebar() {
               <Button 
                 className="w-full bg-gradient-tropical hover:opacity-90 transition-opacity"
                 size="lg"
+                onClick={() => setIsCheckoutOpen(true)}
               >
                 Proceed to Checkout
               </Button>
@@ -141,6 +151,17 @@ export function CartSidebar() {
             </div>
           </div>
         )}
+        
+        <CheckoutModal 
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          onSuccess={handleCheckoutSuccess}
+        />
+        
+        <OrderSuccessModal 
+          isOpen={isSuccessOpen}
+          onClose={() => setIsSuccessOpen(false)}
+        />
       </div>
     </>
   );
