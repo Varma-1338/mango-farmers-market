@@ -1,11 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart, MessageCircle, Package, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { UserOrders } from '@/components/UserOrders';
+import { UserFavorites } from '@/components/UserFavorites';
 
 export function UserDashboard() {
   const navigate = useNavigate();
+  const [currentView, setCurrentView] = useState<'dashboard' | 'orders' | 'favorites'>('dashboard');
+
+  if (currentView === 'orders') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" onClick={() => setCurrentView('dashboard')}>
+            ← Back to Dashboard
+          </Button>
+          <h2 className="text-2xl font-bold">My Orders</h2>
+        </div>
+        <UserOrders />
+      </div>
+    );
+  }
+
+  if (currentView === 'favorites') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" onClick={() => setCurrentView('dashboard')}>
+            ← Back to Dashboard
+          </Button>
+          <h2 className="text-2xl font-bold">My Favorites</h2>
+        </div>
+        <UserFavorites />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -70,8 +101,12 @@ export function UserDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full" disabled>
-              Coming Soon
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => setCurrentView('orders')}
+            >
+              View Orders
             </Button>
           </CardContent>
         </Card>
@@ -87,8 +122,12 @@ export function UserDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full" disabled>
-              Coming Soon
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => setCurrentView('favorites')}
+            >
+              View Favorites
             </Button>
           </CardContent>
         </Card>

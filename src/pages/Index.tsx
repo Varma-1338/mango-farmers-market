@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { FarmerCard } from "@/components/FarmerCard";
 import { Header } from "@/components/Header";
 import { CartSidebar } from "@/components/CartSidebar";
+import { ContactForm } from "@/components/ContactForm";
 
 import heroImage from "@/assets/hero-mangoes.jpg";
 import alphonsoImage from "@/assets/alphonso-mango.jpg";
@@ -171,6 +172,17 @@ const Index = () => {
               <FarmerCard key={index} {...farmer} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Get in Touch</h2>
+            <p className="text-muted-foreground">Have questions? We'd love to hear from you!</p>
+          </div>
+          <ContactForm />
         </div>
       </section>
 
