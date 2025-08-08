@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { ArrowRight, Leaf, Shield, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
@@ -5,6 +6,7 @@ import { FarmerCard } from "@/components/FarmerCard";
 import { Header } from "@/components/Header";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ContactForm } from "@/components/ContactForm";
+import { supabase } from "@/integrations/supabase/client";
 
 import heroImage from "@/assets/hero-mangoes.jpg";
 import alphonsoImage from "@/assets/alphonso-mango.jpg";
@@ -13,50 +15,58 @@ import hadenImage from "@/assets/haden-mango.jpg";
 import farmerRajImage from "@/assets/farmer-raj.jpg";
 
 const Index = () => {
-  const featuredProducts = [
-    {
-      id: "1",
-      name: "Premium Alphonso",
-      variety: "Alphonso Mango",
-      price: 850,
-      image: alphonsoImage,
-      farmer: {
-        name: "Raj Patel",
-        location: "Ratnagiri, Maharashtra",
-        rating: 4.9
-      },
-      inStock: true,
-      organic: true
-    },
-    {
-      id: "2", 
-      name: "Sweet Kesar",
-      variety: "Kesar Mango",
-      price: 720,
-      image: kesarImage,
-      farmer: {
-        name: "Amit Kumar",
-        location: "Junagadh, Gujarat",
-        rating: 4.8
-      },
-      inStock: true,
-      organic: false
-    },
-    {
-      id: "3",
-      name: "Fresh Haden",
-      variety: "Haden Mango", 
-      price: 650,
-      image: hadenImage,
-      farmer: {
-        name: "Priya Sharma",
-        location: "Bangalore, Karnataka",
-        rating: 4.7
-      },
-      inStock: false,
-      organic: true
-    }
-  ];
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Map product names to images
+  const productImageMap: { [key: string]: string } = {
+    "Premium Alphonso": alphonsoImage,
+    "Sweet Kesar": kesarImage,
+    "Fresh Haden": hadenImage
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const { data: products, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_available', true)
+          .order('created_at', { ascending: false })
+          .limit(6);
+
+        if (error) {
+          console.error('Error fetching products:', error);
+          return;
+        }
+
+        // Transform database products to match ProductCard interface
+        const transformedProducts = products?.map((product) => ({
+          id: product.id,
+          name: product.name,
+          variety: product.name, // Using name as variety for now
+          price: Number(product.price),
+          image: productImageMap[product.name] || alphonsoImage, // Fallback to alphonso image
+          farmer: {
+            name: "Verified Farmer", // Default farmer info
+            location: "India",
+            rating: 4.8
+          },
+          inStock: product.stock > 0,
+          organic: product.category === "Premium" // Consider premium as organic
+        })) || [];
+
+        setFeaturedProducts(transformedProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const featuredFarmers = [
     {
@@ -153,9 +163,20 @@ const Index = () => {
             <p className="text-muted-foreground">Discover our premium selection of mangoes from verified farmers</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
+            {loading ? (
+              // Loading skeleton
+              [1, 2, 3].map((n) => (
+                <div key={n} className="bg-card rounded-xl p-6 animate-pulse">
+                  <div className="bg-muted h-48 rounded-lg mb-4"></div>
+                  <div className="bg-muted h-4 rounded mb-2"></div>
+                  <div className="bg-muted h-4 rounded w-2/3"></div>
+                </div>
+              ))
+            ) : (
+              featuredProducts.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))
+            )}
           </div>
         </div>
       </section>
