@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Settings, Package, Users, MessageSquare, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { FarmerManagement } from './FarmerManagement';
 import { ProductManagement } from './ProductManagement';
 import { OrderManagement } from './OrderManagement';
@@ -22,6 +23,46 @@ export function AdminDashboard() {
   });
   
   const [currentView, setCurrentView] = useState<'dashboard' | 'farmers' | 'products' | 'orders' | 'messages'>('dashboard');
+  const [dashboardStats, setDashboardStats] = useState({
+    totalProducts: 0,
+    totalUsers: 0,
+    pendingMessages: 0,
+    loading: true
+  });
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      // Fetch products count
+      const { count: productsCount } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch users count (from profiles table)
+      const { count: usersCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch pending messages count
+      const { count: messagesCount } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'unread');
+
+      setDashboardStats({
+        totalProducts: productsCount || 0,
+        totalUsers: usersCount || 0,
+        pendingMessages: messagesCount || 0,
+        loading: false
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      setDashboardStats(prev => ({ ...prev, loading: false }));
+    }
+  };
 
   const handleStockUpdate = (product: string, value: number) => {
     setProductSettings(prev => ({
@@ -126,7 +167,9 @@ export function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
+            <div className="text-2xl font-bold">
+              {dashboardStats.loading ? '...' : dashboardStats.totalProducts}
+            </div>
             <p className="text-muted-foreground">Active varieties</p>
           </CardContent>
         </Card>
@@ -139,7 +182,9 @@ export function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">
+              {dashboardStats.loading ? '...' : dashboardStats.totalUsers}
+            </div>
             <p className="text-muted-foreground">Registered users</p>
           </CardContent>
         </Card>
@@ -152,7 +197,9 @@ export function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">
+              {dashboardStats.loading ? '...' : dashboardStats.pendingMessages}
+            </div>
             <p className="text-muted-foreground">Pending messages</p>
           </CardContent>
         </Card>
