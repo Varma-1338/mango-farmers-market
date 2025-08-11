@@ -7,13 +7,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [signInData, setSignInData] = useState({ email: '', password: '' });
   const [signUpData, setSignUpData] = useState({ email: '', password: '', fullName: '', confirmPassword: '' });
-  const { signIn, signUp } = useAuth();
+  const [otpData, setOtpData] = useState({ email: '', otp: '', password: '', fullName: '' });
+  const [currentStep, setCurrentStep] = useState<'signup' | 'otp-verification'>('signup');
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -52,16 +55,87 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      const { error } = await signUp(signUpData.email, signUpData.password, signUpData.fullName);
-      
+      // Send OTP to email
+      const { error } = await supabase.functions.invoke('send-otp', {
+        body: {
+          email: signUpData.email,
+          fullName: signUpData.fullName
+        }
+      });
+
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success('Account created! Please check your email to verify your account.');
-        navigate('/');
+        // Store data for OTP verification
+        setOtpData({
+          email: signUpData.email,
+          password: signUpData.password,
+          fullName: signUpData.fullName,
+          otp: ''
+        });
+        setCurrentStep('otp-verification');
+        toast.success('OTP sent to your email! Please check your inbox.');
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error('Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!/^\d{6}$/.test(otpData.otp)) {
+      toast.error('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.functions.invoke('verify-otp', {
+        body: {
+          email: otpData.email,
+          otp: otpData.otp,
+          password: otpData.password,
+          fullName: otpData.fullName
+        }
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Account verified successfully! You can now sign in.');
+        // Reset forms and go back to sign in
+        setCurrentStep('signup');
+        setSignUpData({ email: '', password: '', fullName: '', confirmPassword: '' });
+        setOtpData({ email: '', otp: '', password: '', fullName: '' });
+      }
+    } catch (error) {
+      toast.error('Failed to verify OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-otp', {
+        body: {
+          email: otpData.email,
+          fullName: otpData.fullName
+        }
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('New OTP sent to your email!');
+      }
+    } catch (error) {
+      toast.error('Failed to resend OTP. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -84,11 +158,68 @@ export default function Auth() {
             <CardDescription>Sign in to your account or create a new one</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="signin" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
+            {currentStep === 'otp-verification' ? (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCurrentStep('signup')}
+                    disabled={isLoading}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    Back
+                  </Button>
+                </div>
+                
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-semibold">Verify Your Email</h3>
+                  <p className="text-muted-foreground text-sm mt-2">
+                    We've sent a 6-digit code to <strong>{otpData.email}</strong>
+                  </p>
+                </div>
+
+                <form onSubmit={handleOTPVerification} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="otp">Verification Code</Label>
+                    <Input
+                      id="otp"
+                      type="text"
+                      placeholder="Enter 6-digit code"
+                      value={otpData.otp}
+                      onChange={(e) => setOtpData({ ...otpData, otp: e.target.value.replace(/\D/g, '').slice(0, 6) })}
+                      className="text-center text-lg font-mono tracking-widest"
+                      maxLength={6}
+                      required
+                    />
+                  </div>
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-tropical hover:opacity-90"
+                    disabled={isLoading || otpData.otp.length !== 6}
+                  >
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Verify Account
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleResendOTP}
+                    disabled={isLoading}
+                  >
+                    Resend Code
+                  </Button>
+                </form>
+              </div>
+            ) : (
+              <Tabs defaultValue="signin" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="signin">Sign In</TabsTrigger>
+                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                </TabsList>
 
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
@@ -181,7 +312,8 @@ export default function Auth() {
                   </Button>
                 </form>
               </TabsContent>
-            </Tabs>
+              </Tabs>
+            )}
 
             <div className="mt-6 p-4 bg-muted/50 rounded-lg">
               <p className="text-sm text-muted-foreground mb-2">
