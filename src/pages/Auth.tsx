@@ -315,15 +315,6 @@ export default function Auth() {
               </Tabs>
             )}
 
-            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-2">
-                <strong>Demo accounts:</strong>
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Admin: admin@mangoes.com (any password) <br />
-                User: any other email
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
