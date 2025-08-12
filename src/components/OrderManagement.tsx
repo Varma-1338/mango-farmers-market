@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Eye, Package, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Eye, Package, Clock, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Order {
   id: string;
@@ -25,19 +26,33 @@ export function OrderManagement() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const { user, isAdmin } = useAuth();
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (user && isAdmin) {
+      fetchOrders();
+    } else if (user && !isAdmin) {
+      toast.error('Access denied. Admin privileges required.');
+      setLoading(false);
+    }
+  }, [user, isAdmin]);
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
+      console.log('Fetching orders...');
+      
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Orders fetched:', data?.length || 0);
       setOrders(data || []);
     } catch (error) {
       toast.error('Failed to fetch orders');
@@ -86,15 +101,34 @@ export function OrderManagement() {
   };
 
   if (loading) {
-    return <div>Loading orders...</div>;
+    return (
+      <div className="flex items-center justify-center py-8">
+        <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+        Loading orders...
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Access denied. Admin privileges required.</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Order Management</h3>
-        <div className="text-sm text-muted-foreground">
-          Total Orders: {orders.length}
+        <div className="flex items-center gap-4">
+          <Button onClick={fetchOrders} variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+          <div className="text-sm text-muted-foreground">
+            Total Orders: {orders.length}
+          </div>
         </div>
       </div>
 

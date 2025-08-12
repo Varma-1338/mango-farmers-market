@@ -225,27 +225,27 @@ const Index = () => {
             <div>
               <h3 className="font-semibold mb-4">Shop</h3>
               <ul className="space-y-2 text-white/80">
-                <li>All Mangoes</li>
-                <li>Organic Only</li>
-                <li>By Variety</li>
-                <li>By Location</li>
+                <li><button onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">All Mangoes</button></li>
+                <li><button onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Organic Only</button></li>
+                <li><button onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">By Variety</button></li>
+                <li><button onClick={() => document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">By Location</button></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">For Farmers</h3>
               <ul className="space-y-2 text-white/80">
-                <li>Sell Your Mangoes</li>
-                <li>Farmer Portal</li>
-                <li>Support</li>
+                <li><button onClick={() => document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Sell Your Mangoes</button></li>
+                <li><button onClick={() => document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Farmer Portal</button></li>
+                <li><button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Support</button></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-white/80">
-                <li>Contact Us</li>
-                <li>Track Order</li>
-                <li>Returns</li>
-                <li>FAQ</li>
+                <li><button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Contact Us</button></li>
+                <li><button onClick={() => alert('Track order feature coming soon!')} className="hover:text-white transition-colors">Track Order</button></li>
+                <li><button onClick={() => alert('Returns policy: Contact us within 24 hours')} className="hover:text-white transition-colors">Returns</button></li>
+                <li><button onClick={() => alert('FAQ: Contact us for any questions')} className="hover:text-white transition-colors">FAQ</button></li>
               </ul>
             </div>
           </div>
