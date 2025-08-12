@@ -17,6 +17,7 @@ interface VerifyOTPRequest {
   otp: string;
   password: string;
   fullName: string;
+  userType?: string;
 }
 
 // In-memory OTP storage for demo purposes
@@ -35,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, otp, password, fullName }: VerifyOTPRequest = await req.json();
+    const { email, otp, password, fullName, userType = 'user' }: VerifyOTPRequest = await req.json();
 
     console.log("Attempting to verify OTP for:", email);
 
@@ -57,6 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
       password,
       user_metadata: {
         full_name: fullName,
+        user_type: userType,
       },
       email_confirm: true, // Mark email as confirmed since we verified via OTP
     });

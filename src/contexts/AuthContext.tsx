@@ -7,7 +7,7 @@ interface Profile {
   user_id: string;
   full_name: string | null;
   email: string | null;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'farmer';
   created_at: string;
   updated_at: string;
 }
@@ -18,9 +18,10 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, userType?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
+  isFarmer: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -98,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, userType: string = 'user') => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -108,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         emailRedirectTo: redirectUrl,
         data: {
           full_name: fullName,
+          user_type: userType,
         },
       },
     });
@@ -122,6 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAdmin = profile?.role === 'admin';
+  const isFarmer = profile?.role === 'farmer';
 
   const value = {
     user,
@@ -132,6 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     isAdmin,
+    isFarmer,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

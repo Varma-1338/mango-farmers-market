@@ -14,8 +14,8 @@ import heroMangoes from '@/assets/hero-mangoes.jpg';
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [signInData, setSignInData] = useState({ email: '', password: '' });
-  const [signUpData, setSignUpData] = useState({ email: '', password: '', fullName: '', confirmPassword: '' });
-  const [otpData, setOtpData] = useState({ email: '', otp: '', password: '', fullName: '' });
+  const [signUpData, setSignUpData] = useState({ email: '', password: '', fullName: '', confirmPassword: '', userType: 'user' });
+  const [otpData, setOtpData] = useState({ email: '', otp: '', password: '', fullName: '', userType: 'user' });
   const [currentStep, setCurrentStep] = useState<'signup' | 'otp-verification'>('signup');
   const { signIn } = useAuth();
   const navigate = useNavigate();
@@ -60,7 +60,8 @@ export default function Auth() {
       const { error } = await supabase.functions.invoke('send-otp', {
         body: {
           email: signUpData.email,
-          fullName: signUpData.fullName
+          fullName: signUpData.fullName,
+          userType: signUpData.userType
         }
       });
 
@@ -72,6 +73,7 @@ export default function Auth() {
           email: signUpData.email,
           password: signUpData.password,
           fullName: signUpData.fullName,
+          userType: signUpData.userType,
           otp: ''
         });
         setCurrentStep('otp-verification');
@@ -100,7 +102,8 @@ export default function Auth() {
           email: otpData.email,
           otp: otpData.otp,
           password: otpData.password,
-          fullName: otpData.fullName
+          fullName: otpData.fullName,
+          userType: otpData.userType
         }
       });
 
@@ -110,8 +113,8 @@ export default function Auth() {
         toast.success('Account verified successfully! You can now sign in.');
         // Reset forms and go back to sign in
         setCurrentStep('signup');
-        setSignUpData({ email: '', password: '', fullName: '', confirmPassword: '' });
-        setOtpData({ email: '', otp: '', password: '', fullName: '' });
+        setSignUpData({ email: '', password: '', fullName: '', confirmPassword: '', userType: 'user' });
+        setOtpData({ email: '', otp: '', password: '', fullName: '', userType: 'user' });
       }
     } catch (error) {
       toast.error('Failed to verify OTP. Please try again.');
@@ -126,7 +129,8 @@ export default function Auth() {
       const { error } = await supabase.functions.invoke('send-otp', {
         body: {
           email: otpData.email,
-          fullName: otpData.fullName
+          fullName: otpData.fullName,
+          userType: otpData.userType
         }
       });
 
@@ -269,6 +273,28 @@ export default function Auth() {
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
+                    <Label>Account Type</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={signUpData.userType === 'user' ? "default" : "outline"}
+                        onClick={() => setSignUpData({ ...signUpData, userType: 'user' })}
+                        className="flex-1"
+                      >
+                        Customer
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={signUpData.userType === 'farmer' ? "default" : "outline"}
+                        onClick={() => setSignUpData({ ...signUpData, userType: 'farmer' })}
+                        className="flex-1"
+                      >
+                        Farmer
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
                     <Label htmlFor="signup-name">Full Name</Label>
                     <Input
                       id="signup-name"
@@ -312,13 +338,22 @@ export default function Auth() {
                       required
                     />
                   </div>
+                  
+                  {signUpData.userType === 'farmer' && (
+                    <div className="p-3 bg-secondary/20 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        As a farmer, you'll be able to showcase and sell your mango products directly to customers.
+                      </p>
+                    </div>
+                  )}
+                  
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-tropical hover:opacity-90"
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Account
+                    {signUpData.userType === 'farmer' ? 'Register as Farmer' : 'Create Account'}
                   </Button>
                 </form>
               </TabsContent>
