@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import heroMangoes from '@/assets/hero-mangoes.jpg';
 
@@ -15,8 +15,6 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [signInData, setSignInData] = useState({ email: '', password: '' });
   const [signUpData, setSignUpData] = useState({ email: '', password: '', fullName: '', confirmPassword: '', userType: 'user' });
-  const [otpData, setOtpData] = useState({ email: '', otp: '', password: '', fullName: '', userType: 'user' });
-  const [currentStep, setCurrentStep] = useState<'signup' | 'otp-verification'>('signup');
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
@@ -26,14 +24,13 @@ export default function Auth() {
 
     try {
       const { error } = await signIn(signInData.email, signInData.password);
-      
       if (error) {
         toast.error(error.message);
       } else {
         toast.success('Signed in successfully!');
         navigate('/');
       }
-    } catch (error) {
+    } catch {
       toast.error('An unexpected error occurred');
     } finally {
       setIsLoading(false);
@@ -42,118 +39,50 @@ export default function Auth() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (signUpData.password !== signUpData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
-
     if (signUpData.password.length < 6) {
       toast.error('Password must be at least 6 characters');
       return;
     }
 
     setIsLoading(true);
-
     try {
-      // Send OTP to email
-      const { error } = await supabase.functions.invoke('send-otp', {
-        body: {
-          email: signUpData.email,
-          fullName: signUpData.fullName,
-          userType: signUpData.userType
-        }
+      const { data, error } = await supabase.auth.signUp({
+        email: signUpData.email,
+        password: signUpData.password,
+        options: {
+          data: {
+            fullName: signUpData.fullName,
+            userType: signUpData.userType,
+          },
+        },
       });
 
       if (error) {
         toast.error(error.message);
       } else {
-        // Store data for OTP verification
-        setOtpData({
-          email: signUpData.email,
-          password: signUpData.password,
-          fullName: signUpData.fullName,
-          userType: signUpData.userType,
-          otp: ''
-        });
-        setCurrentStep('otp-verification');
-        toast.success('OTP sent to your email! Please check your inbox.');
-      }
-    } catch (error) {
-      toast.error('Failed to send OTP. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleOTPVerification = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!/^\d{6}$/.test(otpData.otp)) {
-      toast.error('Please enter a valid 6-digit OTP');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.functions.invoke('verify-otp', {
-        body: {
-          email: otpData.email,
-          otp: otpData.otp,
-          password: otpData.password,
-          fullName: otpData.fullName,
-          userType: otpData.userType
-        }
-      });
-
-      if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success('Account verified successfully! You can now sign in.');
-        // Reset forms and go back to sign in
-        setCurrentStep('signup');
+        toast.success('Account created! Please check your email to confirm.');
         setSignUpData({ email: '', password: '', fullName: '', confirmPassword: '', userType: 'user' });
-        setOtpData({ email: '', otp: '', password: '', fullName: '', userType: 'user' });
       }
-    } catch (error) {
-      toast.error('Failed to verify OTP. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendOTP = async () => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.functions.invoke('send-otp', {
-        body: {
-          email: otpData.email,
-          fullName: otpData.fullName,
-          userType: otpData.userType
-        }
-      });
-
-      if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success('New OTP sent to your email!');
-      }
-    } catch (error) {
-      toast.error('Failed to resend OTP. Please try again.');
+    } catch {
+      toast.error('Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-4 relative"
       style={{
         backgroundImage: `url(${heroMangoes})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-background/95 to-background/90" />
@@ -172,68 +101,11 @@ export default function Auth() {
             <CardDescription>Sign in to your account or create a new one</CardDescription>
           </CardHeader>
           <CardContent>
-            {currentStep === 'otp-verification' ? (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setCurrentStep('signup')}
-                    disabled={isLoading}
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-1" />
-                    Back
-                  </Button>
-                </div>
-                
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold">Verify Your Email</h3>
-                  <p className="text-muted-foreground text-sm mt-2">
-                    We've sent a 6-digit code to <strong>{otpData.email}</strong>
-                  </p>
-                </div>
-
-                <form onSubmit={handleOTPVerification} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="otp">Verification Code</Label>
-                    <Input
-                      id="otp"
-                      type="text"
-                      placeholder="Enter 6-digit code"
-                      value={otpData.otp}
-                      onChange={(e) => setOtpData({ ...otpData, otp: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-                      className="text-center text-lg font-mono tracking-widest"
-                      maxLength={6}
-                      required
-                    />
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-tropical hover:opacity-90"
-                    disabled={isLoading || otpData.otp.length !== 6}
-                  >
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Verify Account
-                  </Button>
-                  
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={handleResendOTP}
-                    disabled={isLoading}
-                  >
-                    Resend Code
-                  </Button>
-                </form>
-              </div>
-            ) : (
-              <Tabs defaultValue="signin" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="signin">Sign In</TabsTrigger>
-                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                </TabsList>
+            <Tabs defaultValue="signin" className="space-y-4">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signin">Sign In</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
 
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
@@ -259,8 +131,8 @@ export default function Auth() {
                       required
                     />
                   </div>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full bg-gradient-tropical hover:opacity-90"
                     disabled={isLoading}
                   >
@@ -277,7 +149,7 @@ export default function Auth() {
                     <div className="flex gap-2">
                       <Button
                         type="button"
-                        variant={signUpData.userType === 'user' ? "default" : "outline"}
+                        variant={signUpData.userType === 'user' ? 'default' : 'outline'}
                         onClick={() => setSignUpData({ ...signUpData, userType: 'user' })}
                         className="flex-1"
                       >
@@ -285,7 +157,7 @@ export default function Auth() {
                       </Button>
                       <Button
                         type="button"
-                        variant={signUpData.userType === 'farmer' ? "default" : "outline"}
+                        variant={signUpData.userType === 'farmer' ? 'default' : 'outline'}
                         onClick={() => setSignUpData({ ...signUpData, userType: 'farmer' })}
                         className="flex-1"
                       >
@@ -293,7 +165,7 @@ export default function Auth() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Full Name</Label>
                     <Input
@@ -338,7 +210,7 @@ export default function Auth() {
                       required
                     />
                   </div>
-                  
+
                   {signUpData.userType === 'farmer' && (
                     <div className="p-3 bg-secondary/20 rounded-lg">
                       <p className="text-sm text-muted-foreground">
@@ -346,9 +218,9 @@ export default function Auth() {
                       </p>
                     </div>
                   )}
-                  
-                  <Button 
-                    type="submit" 
+
+                  <Button
+                    type="submit"
                     className="w-full bg-gradient-tropical hover:opacity-90"
                     disabled={isLoading}
                   >
@@ -357,9 +229,7 @@ export default function Auth() {
                   </Button>
                 </form>
               </TabsContent>
-              </Tabs>
-            )}
-
+            </Tabs>
           </CardContent>
         </Card>
       </div>
