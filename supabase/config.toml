@@ -55,12 +55,6 @@ enable_email_change_confirmations = true
 enable_phone_confirmations = false
 enable_phone_change_confirmations = true
 
-[functions.send-otp]
-verify_jwt = false
-
-[functions.verify-otp]
-verify_jwt = false
-
 [edge-runtime]
 enabled = true
 port = 54329
