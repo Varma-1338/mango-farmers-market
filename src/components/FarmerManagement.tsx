@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Plus, Edit, Trash2, MapPin, Phone, Mail, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Farmer {
   id: string;
@@ -47,6 +48,7 @@ const initialFormData: FarmerFormData = {
 };
 
 export function FarmerManagement() {
+  const { isAdmin } = useAuth();
   const [farmers, setFarmers] = useState<Farmer[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -332,13 +334,14 @@ export function FarmerManagement() {
                       {farmer.location}
                     </div>
                   )}
-                  {farmer.phone && (
+                  {/* Only show contact information to admins for security */}
+                  {isAdmin && farmer.phone && (
                     <div className="flex items-center gap-1">
                       <Phone className="h-4 w-4" />
                       {farmer.phone}
                     </div>
                   )}
-                  {farmer.email && (
+                  {isAdmin && farmer.email && (
                     <div className="flex items-center gap-1">
                       <Mail className="h-4 w-4" />
                       {farmer.email}
