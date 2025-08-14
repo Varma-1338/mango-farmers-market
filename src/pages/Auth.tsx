@@ -15,7 +15,7 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [signInData, setSignInData] = useState({ email: '', password: '' });
   const [signUpData, setSignUpData] = useState({ email: '', password: '', fullName: '', confirmPassword: '', userType: 'user' });
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -51,16 +51,12 @@ export default function Auth() {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: signUpData.email,
-        password: signUpData.password,
-        options: {
-          data: {
-            fullName: signUpData.fullName,
-            userType: signUpData.userType,
-          },
-        },
-      });
+      const { error } = await signUp(
+        signUpData.email, 
+        signUpData.password, 
+        signUpData.fullName, 
+        signUpData.userType
+      );
 
       if (error) {
         toast.error(error.message);
@@ -68,7 +64,8 @@ export default function Auth() {
         toast.success('Account created! Please check your email to confirm.');
         setSignUpData({ email: '', password: '', fullName: '', confirmPassword: '', userType: 'user' });
       }
-    } catch {
+    } catch (err) {
+      console.error('Signup error:', err);
       toast.error('Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
