@@ -8,14 +8,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+
 import heroMangoes from '@/assets/hero-mangoes.jpg';
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [signInData, setSignInData] = useState({ email: '', password: '' });
   const [signUpData, setSignUpData] = useState({ email: '', password: '', fullName: '', confirmPassword: '', userType: 'user' });
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -51,16 +51,12 @@ export default function Auth() {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: signUpData.email,
-        password: signUpData.password,
-        options: {
-          data: {
-            fullName: signUpData.fullName,
-            userType: signUpData.userType,
-          },
-        },
-      });
+      const { error } = await signUp(
+        signUpData.email,
+        signUpData.password,
+        signUpData.fullName,
+        signUpData.userType
+      );
 
       if (error) {
         toast.error(error.message);
