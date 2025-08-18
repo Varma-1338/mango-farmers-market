@@ -57,6 +57,7 @@ export default function Auth() {
         signUpData.fullName,
         signUpData.userType
       );
+      console.log('Signup finished. Error:', error);
 
       if (error) {
         toast.error(error.message);
