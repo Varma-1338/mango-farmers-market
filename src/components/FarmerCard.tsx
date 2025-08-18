@@ -11,6 +11,7 @@ interface FarmerCardProps {
   specialties: string[];
   deliveryDays: number;
   verified?: boolean;
+  highlightTerm?: string;
 }
 
 export function FarmerCard({ 
@@ -21,8 +22,19 @@ export function FarmerCard({
   image, 
   specialties, 
   deliveryDays,
-  verified = false 
+  verified = false,
+  highlightTerm = ''
 }: FarmerCardProps) {
+  const escapeRegExp = (s: string) => s.replace(/[-/\\^$*+?.()|[\\]{}]/g, '\\$&');
+  const highlight = (text: string) => {
+    if (!highlightTerm) return text;
+    const regex = new RegExp(`(${escapeRegExp(highlightTerm)})`, 'ig');
+    return text.split(regex).map((part, i) =>
+      part.toLowerCase() === highlightTerm.toLowerCase()
+        ? <mark key={i} className="bg-primary/20 rounded px-1">{part}</mark>
+        : part
+    );
+  };
   return (
     <Card className="overflow-hidden shadow-soft hover:shadow-card transition-all duration-300">
       <div className="relative">
@@ -41,10 +53,10 @@ export function FarmerCard({
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-foreground">{name}</h3>
+            <h3 className="font-semibold text-foreground">{highlight(name)}</h3>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="h-3 w-3" />
-              <span>{location}</span>
+              <span>{highlight(location)}</span>
             </div>
           </div>
           
@@ -57,7 +69,7 @@ export function FarmerCard({
           <div className="flex flex-wrap gap-1">
             {specialties.slice(0, 2).map((specialty, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
-                {specialty}
+                {highlight(specialty)}
               </Badge>
             ))}
             {specialties.length > 2 && (

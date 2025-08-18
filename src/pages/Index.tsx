@@ -17,6 +17,7 @@ import farmerRajImage from "@/assets/farmer-raj.jpg";
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Map product names to images
   const productImageMap: { [key: string]: string } = {
@@ -68,6 +69,17 @@ const Index = () => {
     fetchProducts();
   }, []);
 
+  // Listen for global search events from Header
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const custom = e as CustomEvent;
+      const term = (custom.detail?.term as string) || '';
+      setSearchTerm(term);
+    };
+    window.addEventListener('app:search', handler as EventListener);
+    return () => window.removeEventListener('app:search', handler as EventListener);
+  }, []);
+
   const featuredFarmers = [
     {
       name: "Raj Patel",
@@ -80,6 +92,23 @@ const Index = () => {
       verified: true
     }
   ];
+
+  // Apply search filters
+  const filteredProducts = searchTerm
+    ? featuredProducts.filter((p) =>
+        [p.name, p.variety, p.farmer.name, p.farmer.location]
+          .some((f) => f.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    : featuredProducts;
+
+  const filteredFarmers = searchTerm
+    ? featuredFarmers.filter((f) =>
+        [f.name, f.location, ...(f.specialties || [])]
+          .join(' ')
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
+    : featuredFarmers;
 
   return (
     <div className="min-h-screen bg-background">
@@ -110,7 +139,9 @@ const Index = () => {
                 >
                   Shop Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" onClick={() => {
+                  document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' });
+                }}>
                   Meet Our Farmers
                 </Button>
               </div>
@@ -173,9 +204,15 @@ const Index = () => {
                 </div>
               ))
             ) : (
-              featuredProducts.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))
+              filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <ProductCard key={product.id} {...product} highlightTerm={searchTerm} />
+                ))
+              ) : (
+                <div className="col-span-full text-center text-muted-foreground">
+                  No results for "{searchTerm}"
+                </div>
+              )
             )}
           </div>
         </div>
@@ -189,9 +226,15 @@ const Index = () => {
             <p className="text-muted-foreground">Supporting local farmers and bringing you the best mangoes</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredFarmers.map((farmer, index) => (
-              <FarmerCard key={index} {...farmer} />
-            ))}
+            {filteredFarmers.length > 0 ? (
+              filteredFarmers.map((farmer, index) => (
+                <FarmerCard key={index} {...farmer} highlightTerm={searchTerm} />
+              ))
+            ) : (
+              <div className="col-span-full text-center text-muted-foreground">
+                No results for "{searchTerm}"
+              </div>
+            )}
           </div>
         </div>
       </section>

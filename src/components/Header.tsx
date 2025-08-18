@@ -10,19 +10,20 @@ export function Header() {
   const { signOut, profile, isAdmin } = useAuth();
   const navigate = useNavigate();
   
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const searchInput = e.currentTarget.querySelector('input') as HTMLInputElement;
-    const searchTerm = searchInput.value.trim();
+    const form = e.currentTarget;
+    const searchInput = form.querySelector('input') as HTMLInputElement;
+    const searchTerm = searchInput?.value.trim() || '';
+
+    // Broadcast search term to pages
+    window.dispatchEvent(new CustomEvent('app:search', { detail: { term: searchTerm } }));
+
     if (searchTerm) {
-      // Scroll to products section and filter
       const productsSection = document.getElementById('featured-products');
-      if (productsSection) {
-        productsSection.scrollIntoView({ behavior: 'smooth' });
-      }
+      productsSection?.scrollIntoView({ behavior: 'smooth' });
     }
   };
-  
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
@@ -40,7 +41,7 @@ export function Header() {
             <form onSubmit={handleSearch} className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input 
-                placeholder="Search mangoes, farmers..." 
+                placeholder="Search mangoes and farmers (name, variety, location)" 
                 className="pl-10 pr-4"
               />
             </form>

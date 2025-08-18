@@ -18,6 +18,7 @@ interface ProductCardProps {
   };
   inStock: boolean;
   organic?: boolean;
+  highlightTerm?: string;
 }
 
 export function ProductCard({ 
@@ -28,9 +29,21 @@ export function ProductCard({
   image, 
   farmer, 
   inStock, 
-  organic = false 
+  organic = false,
+  highlightTerm = '' 
 }: ProductCardProps) {
   const { addItem, setIsCartOpen } = useCart();
+
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const highlight = (text: string) => {
+    if (!highlightTerm) return text;
+    const regex = new RegExp(`(${escapeRegExp(highlightTerm)})`, 'ig');
+    return text.split(regex).map((part, i) =>
+      part.toLowerCase() === highlightTerm.toLowerCase()
+        ? <mark key={i} className="bg-primary/20 rounded px-1">{part}</mark>
+        : part
+    );
+  };
 
   const handleAddToCart = () => {
     addItem({
@@ -77,13 +90,13 @@ export function ProductCard({
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-lg text-foreground">{name}</h3>
-            <p className="text-muted-foreground text-sm">{variety}</p>
+            <h3 className="font-semibold text-lg text-foreground">{highlight(name)}</h3>
+            <p className="text-muted-foreground text-sm">{highlight(variety)}</p>
           </div>
           
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{farmer.location}</span>
+            <span className="text-sm text-muted-foreground">{highlight(farmer.location)}</span>
           </div>
           
           <div className="flex items-center justify-between">
