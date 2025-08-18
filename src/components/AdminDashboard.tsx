@@ -4,13 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Settings, Package, Users, MessageSquare, ArrowLeft } from 'lucide-react';
+import { Settings, Package, Users, MessageSquare, ArrowLeft, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { FarmerManagement } from './FarmerManagement';
 import { ProductManagement } from './ProductManagement';
 import { OrderManagement } from './OrderManagement';
 import { MessageManagement } from './MessageManagement';
+import { ProfileSettings } from './ProfileSettings';
 
 export function AdminDashboard() {
   const [productSettings, setProductSettings] = useState({
@@ -22,7 +23,7 @@ export function AdminDashboard() {
     hadenAvailable: false,
   });
   
-  const [currentView, setCurrentView] = useState<'dashboard' | 'farmers' | 'products' | 'orders' | 'messages'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'farmers' | 'products' | 'orders' | 'messages' | 'settings'>('dashboard');
   const [dashboardStats, setDashboardStats] = useState({
     totalProducts: 0,
     totalUsers: 0,
@@ -156,6 +157,24 @@ export function AdminDashboard() {
     );
   }
 
+  if (currentView === 'settings') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </div>
+        <ProfileSettings />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -238,6 +257,10 @@ export function AdminDashboard() {
             </Button>
             <Button variant="outline" onClick={() => setCurrentView('messages')}>
               View Messages
+            </Button>
+            <Button variant="outline" onClick={() => setCurrentView('settings')}>
+              <User className="h-4 w-4 mr-2" />
+              Account Settings
             </Button>
           </div>
         </CardContent>

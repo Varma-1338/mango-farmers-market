@@ -7,10 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Eye, Package, TrendingUp, IndianRupee } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Package, TrendingUp, IndianRupee, Settings, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { ProfileSettings } from './ProfileSettings';
 
 interface Product {
   id: string;
@@ -38,6 +39,7 @@ export function FarmerDashboard() {
   const [loading, setLoading] = useState(true);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'settings'>('dashboard');
   const [newProduct, setNewProduct] = useState<NewProduct>({
     name: '',
     description: '',
@@ -164,6 +166,24 @@ export function FarmerDashboard() {
     lowStockProducts: products.filter(p => p.stock < 10).length
   };
 
+  if (currentView === 'settings') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </div>
+        <ProfileSettings />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -183,13 +203,14 @@ export function FarmerDashboard() {
           <p className="text-muted-foreground">Manage your mango products and sales</p>
         </div>
         
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-tropical hover:opacity-90">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Product
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-tropical hover:opacity-90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Product
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Add New Product</DialogTitle>
@@ -285,6 +306,16 @@ export function FarmerDashboard() {
             </form>
           </DialogContent>
         </Dialog>
+
+        <Button 
+          variant="outline"
+          onClick={() => setCurrentView('settings')}
+          className="flex items-center gap-2"
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </Button>
+      </div>
       </div>
 
       {/* Stats Cards */}

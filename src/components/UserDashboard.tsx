@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShoppingCart, MessageCircle, Package, Heart } from 'lucide-react';
+import { ShoppingCart, MessageCircle, Package, Heart, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UserOrders } from '@/components/UserOrders';
 import { UserFavorites } from '@/components/UserFavorites';
+import { ProfileSettings } from '@/components/ProfileSettings';
 
 export function UserDashboard() {
   const navigate = useNavigate();
-  const [currentView, setCurrentView] = useState<'dashboard' | 'orders' | 'favorites'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'orders' | 'favorites' | 'settings'>('dashboard');
 
   if (currentView === 'orders') {
     return (
@@ -34,6 +35,19 @@ export function UserDashboard() {
           <h2 className="text-2xl font-bold">My Favorites</h2>
         </div>
         <UserFavorites />
+      </div>
+    );
+  }
+
+  if (currentView === 'settings') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" onClick={() => setCurrentView('dashboard')}>
+            ← Back to Dashboard
+          </Button>
+        </div>
+        <ProfileSettings />
       </div>
     );
   }
@@ -128,6 +142,27 @@ export function UserDashboard() {
               onClick={() => setCurrentView('favorites')}
             >
               View Favorites
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-primary" />
+              Account Settings
+            </CardTitle>
+            <CardDescription>
+              Update your profile and password
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => setCurrentView('settings')}
+            >
+              Manage Account
             </Button>
           </CardContent>
         </Card>
