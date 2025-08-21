@@ -16,6 +16,7 @@ interface Product {
   name: string;
   description: string | null;
   price: number;
+  margin_percentage: number;
   image_url: string | null;
   stock: number;
   is_available: boolean;
@@ -35,6 +36,7 @@ export function ProductManagement() {
     name: '',
     description: '',
     price: '',
+    margin_percentage: '',
     category: '',
     stock: '',
     is_available: true
@@ -103,6 +105,7 @@ export function ProductManagement() {
         name: formData.name,
         description: formData.description || null,
         price: parseFloat(formData.price),
+        margin_percentage: parseFloat(formData.margin_percentage) || 0,
         image_url: imageUrl,
         stock: parseInt(formData.stock),
         is_available: formData.is_available,
@@ -157,6 +160,7 @@ export function ProductManagement() {
       name: '',
       description: '',
       price: '',
+      margin_percentage: '',
       category: '',
       stock: '',
       is_available: true
@@ -172,6 +176,7 @@ export function ProductManagement() {
       name: product.name,
       description: product.description || '',
       price: product.price.toString(),
+      margin_percentage: product.margin_percentage?.toString() || '0',
       category: product.category || '',
       stock: product.stock.toString(),
       is_available: product.is_available
@@ -225,9 +230,9 @@ export function ProductManagement() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price (₹)</Label>
+                  <Label htmlFor="price">Base Price (₹)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -236,6 +241,22 @@ export function ProductManagement() {
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     required
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="margin">Margin (%)</Label>
+                  <Input
+                    id="margin"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.margin_percentage}
+                    onChange={(e) => setFormData({ ...formData, margin_percentage: e.target.value })}
+                    placeholder="0"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Final: ₹{((parseFloat(formData.price) || 0) * (1 + (parseFloat(formData.margin_percentage) || 0) / 100)).toFixed(2)}
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -315,7 +336,10 @@ export function ProductManagement() {
                     <p className="text-sm text-muted-foreground">{product.description}</p>
                   )}
                   <div className="flex items-center gap-4 mt-1">
-                    <span className="font-medium">₹{product.price}</span>
+                    <div className="flex flex-col">
+                      <span className="font-medium">₹{(product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)}</span>
+                      <span className="text-xs text-muted-foreground">Base: ₹{product.price} + {product.margin_percentage || 0}% margin</span>
+                    </div>
                     <span className="text-sm">Stock: {product.stock}kg</span>
                     <span className={`text-sm px-2 py-1 rounded ${
                       product.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'

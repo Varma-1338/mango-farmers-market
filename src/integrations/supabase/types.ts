@@ -152,6 +152,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_available: boolean
+          margin_percentage: number | null
           name: string
           price: number
           stock: number
@@ -165,6 +166,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_available?: boolean
+          margin_percentage?: number | null
           name: string
           price: number
           stock?: number
@@ -178,6 +180,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_available?: boolean
+          margin_percentage?: number | null
           name?: string
           price?: number
           stock?: number

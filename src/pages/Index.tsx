@@ -47,7 +47,7 @@ const Index = () => {
           id: product.id,
           name: product.name,
           variety: product.name, // Using name as variety for now
-          price: Number(product.price),
+          price: Number((product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)), // Calculate final price with margin
           image: productImageMap[product.name] || alphonsoImage, // Fallback to alphonso image
           farmer: {
             name: "Verified Farmer", // Default farmer info
