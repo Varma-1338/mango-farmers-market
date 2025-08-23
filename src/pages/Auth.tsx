@@ -88,7 +88,7 @@ export default function Auth() {
           <div className="w-16 h-16 bg-gradient-tropical rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-2xl">M</span>
           </div>
-          <h1 className="text-3xl font-bold text-foreground">MangoMarket</h1>
+          <h1 className="text-3xl font-bold text-foreground">Varma's MangoMarket</h1>
           <p className="text-muted-foreground mt-2">Welcome to the freshest mango marketplace</p>
         </div>
 
