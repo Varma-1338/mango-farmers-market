@@ -1,14 +1,26 @@
-import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, ArrowLeft, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Header() {
   const { getTotalItems, setIsCartOpen } = useCart();
-  const { signOut, profile, isAdmin } = useAuth();
+  const { signOut, profile, isAdmin, isFarmer } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const isDashboard = location.pathname === '/dashboard';
   
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,12 +40,24 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-8 h-8 bg-gradient-tropical rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
+          {/* Logo with back button for mobile dashboard */}
+          <div className="flex items-center gap-2">
+            {isDashboard && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="md:hidden"
+                onClick={() => navigate('/')}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+              <div className="w-8 h-8 bg-gradient-tropical rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">M</span>
+              </div>
+              <span className="font-bold text-xl text-foreground">MangoMarket</span>
             </div>
-            <span className="font-bold text-xl text-foreground">MangoMarket</span>
           </div>
           
           {/* Search Bar - Hidden on mobile */}
@@ -68,11 +92,13 @@ export function Header() {
               )}
             </Button>
             
+            {/* Desktop user menu */}
             <Button 
               variant="ghost" 
               size="icon"
               onClick={() => navigate('/dashboard')}
-              title={`${profile?.full_name || profile?.email} (${isAdmin ? 'Admin' : 'User'})`}
+              title={`${profile?.full_name || profile?.email} (${isAdmin ? 'Admin' : isFarmer ? 'Farmer' : 'User'})`}
+              className="hidden md:flex"
             >
               <User className="h-5 w-5" />
             </Button>
@@ -81,14 +107,36 @@ export function Header() {
               variant="ghost" 
               size="sm"
               onClick={signOut}
-              className="hidden sm:flex"
+              className="hidden md:flex"
             >
               Sign Out
             </Button>
             
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
+            {/* Mobile menu */}
+            <DropdownMenu open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => {
+                  navigate('/dashboard');
+                  setIsMobileMenuOpen(false);
+                }}>
+                  <User className="mr-2 h-4 w-4" />
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => {
+                  signOut();
+                  setIsMobileMenuOpen(false);
+                }}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
