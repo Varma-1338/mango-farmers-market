@@ -6,6 +6,7 @@ import { FarmerCard } from "@/components/FarmerCard";
 import { Header } from "@/components/Header";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ContactForm } from "@/components/ContactForm";
+import { TrackOrderModal } from "@/components/TrackOrderModal";
 import { supabase } from "@/integrations/supabase/client";
 
 import heroImage from "@/assets/hero-mangoes.jpg";
@@ -18,6 +19,7 @@ const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isTrackOrderModalOpen, setIsTrackOrderModalOpen] = useState(false);
 
   // Map product names to images
   const productImageMap: { [key: string]: string } = {
@@ -286,7 +288,7 @@ const Index = () => {
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-white/80">
                 <li><button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Contact Us</button></li>
-                <li><button onClick={() => alert('Track order feature coming soon!')} className="hover:text-white transition-colors">Track Order</button></li>
+                <li><button onClick={() => setIsTrackOrderModalOpen(true)} className="hover:text-white transition-colors">Track Order</button></li>
                 <li><button onClick={() => alert('Returns policy: Contact us within 24 hours')} className="hover:text-white transition-colors">Returns</button></li>
                 <li><button onClick={() => alert('FAQ: Contact us for any questions')} className="hover:text-white transition-colors">FAQ</button></li>
               </ul>
@@ -297,6 +299,11 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      
+      <TrackOrderModal 
+        isOpen={isTrackOrderModalOpen} 
+        onClose={() => setIsTrackOrderModalOpen(false)} 
+      />
     </div>
   );
 };
