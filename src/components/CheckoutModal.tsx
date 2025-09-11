@@ -32,7 +32,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.customerName || !formData.customerEmail || !formData.deliveryAddress) {
+    if (!formData.customerName || !formData.customerEmail || !formData.customerPhone || !formData.deliveryAddress) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -49,7 +49,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
         user_id: user?.id || null,
         customer_name: formData.customerName,
         customer_email: formData.customerEmail,
-        customer_phone: formData.customerPhone || null,
+        customer_phone: formData.customerPhone,
         delivery_address: formData.deliveryAddress,
         order_notes: formData.orderNotes || null,
         total_amount: getTotalPrice(),
@@ -163,7 +163,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
               </div>
               
               <div>
-                <Label htmlFor="customerPhone">Phone Number</Label>
+                <Label htmlFor="customerPhone">Phone Number *</Label>
                 <Input
                   id="customerPhone"
                   name="customerPhone"
@@ -171,6 +171,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
                   value={formData.customerPhone}
                   onChange={handleChange}
                   placeholder="+91 XXXXX XXXXX"
+                  required
                 />
               </div>
             </CardContent>
