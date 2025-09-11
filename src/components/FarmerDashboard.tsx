@@ -7,11 +7,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Eye, Package, TrendingUp, IndianRupee, Settings, ArrowLeft } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Package, TrendingUp, IndianRupee, Settings, ArrowLeft, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileSettings } from './ProfileSettings';
+import { FarmerOrders } from './FarmerOrders';
 
 interface Product {
   id: string;
@@ -39,7 +40,7 @@ export function FarmerDashboard() {
   const [loading, setLoading] = useState(true);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'settings'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'orders' | 'settings'>('dashboard');
   const [newProduct, setNewProduct] = useState<NewProduct>({
     name: '',
     description: '',
@@ -184,6 +185,24 @@ export function FarmerDashboard() {
     );
   }
 
+  if (currentView === 'orders') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </div>
+        <FarmerOrders />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -204,6 +223,15 @@ export function FarmerDashboard() {
         </div>
         
         <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            onClick={() => setCurrentView('orders')}
+            className="flex items-center gap-2"
+          >
+            <ShoppingBag className="h-4 w-4" />
+            View Orders
+          </Button>
+          
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-gradient-tropical hover:opacity-90">
