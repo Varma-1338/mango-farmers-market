@@ -54,16 +54,22 @@ export function LocationSelector({ onLocationSelect, onClose, currentLocation }:
             Choose your location to see products available in your area
           </p>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <LocationAutocomplete
-              value={location}
-              onChange={setLocation}
-              placeholder="Enter your city and state"
-            />
-            <Button type="submit" className="w-full" disabled={!location.trim()}>
-              Set Location
-            </Button>
-          </form>
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm font-medium mb-2">Search for your location:</p>
+              <LocationAutocomplete
+                value={location}
+                onChange={setLocation}
+                placeholder="Type to search cities, states..."
+              />
+            </div>
+            
+            <form onSubmit={handleSubmit}>
+              <Button type="submit" className="w-full" disabled={!location.trim()}>
+                Set Location
+              </Button>
+            </form>
+          </div>
           
           <div className="space-y-2">
             <p className="text-sm font-medium">Popular locations:</p>
