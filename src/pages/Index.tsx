@@ -88,6 +88,7 @@ const Index = () => {
         }) || [];
 
         setFeaturedProducts(transformedProducts);
+        console.log('Loaded products:', transformedProducts.length, transformedProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -257,7 +258,7 @@ const Index = () => {
                 ))
               ) : (
                 <div className="col-span-full text-center text-muted-foreground">
-                  No results for "{searchTerm}"
+                  {searchTerm ? `No results for "${searchTerm}"` : "No products available"}
                 </div>
               )
             )}
