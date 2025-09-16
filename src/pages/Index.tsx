@@ -85,7 +85,7 @@ const Index = () => {
             inStock: product.stock > 0,
             organic: product.category === "Premium" // Consider premium as organic
           };
-        }).filter(product => product.farmerLocation && product.farmerLocation !== "India") || []; // Only show products with valid farmer locations
+        }) || [];
 
         setFeaturedProducts(transformedProducts);
       } catch (error) {
