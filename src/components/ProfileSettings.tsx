@@ -11,6 +11,7 @@ import { User, Lock, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { FarmerLocationSettings } from './FarmerLocationSettings';
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -32,6 +33,8 @@ export function ProfileSettings() {
   const { profile, user } = useAuth();
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  
+  const isFarmer = profile?.role === 'farmer';
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -263,6 +266,9 @@ export function ProfileSettings() {
           </Form>
         </CardContent>
       </Card>
+
+      {/* Farmer-specific location settings */}
+      {isFarmer && <FarmerLocationSettings />}
     </div>
   );
 }
