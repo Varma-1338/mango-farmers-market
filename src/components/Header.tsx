@@ -82,7 +82,8 @@ export function Header() {
               variant="ghost" 
               size="sm"
               onClick={() => setShowLocationSelector(true)}
-              className="hidden md:flex items-center gap-1"
+              className="flex items-center gap-1"
+              aria-label="Set location"
             >
               <MapPin className="h-4 w-4" />
               {customerLocation ? (
