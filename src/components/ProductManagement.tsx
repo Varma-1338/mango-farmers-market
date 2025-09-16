@@ -149,6 +149,7 @@ export function ProductManagement() {
         stock: parseInt(formData.stock),
         is_available: formData.is_available,
         category: formData.category || null,
+        location: formData.location || null,
         ...(profile?.role === 'farmer' && user?.email && {
           farmer_email: user.email
         })

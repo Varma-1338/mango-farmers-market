@@ -33,6 +33,7 @@ interface NewProduct {
   stock: string;
   category: string;
   image_url: string;
+  location: string;
 }
 
 export function FarmerDashboard() {
@@ -47,7 +48,8 @@ export function FarmerDashboard() {
     price: '',
     stock: '',
     category: '',
-    image_url: ''
+    image_url: '',
+    location: ''
   });
   const { user } = useAuth();
 
@@ -97,7 +99,8 @@ export function FarmerDashboard() {
             category: newProduct.category || 'Mango',
             image_url: newProduct.image_url,
             is_available: true,
-            farmer_email: user?.email // Link product to current farmer
+            farmer_email: user?.email, // Link product to current farmer
+            location: newProduct.location
           }
         ]);
 
@@ -110,7 +113,8 @@ export function FarmerDashboard() {
         price: '',
         stock: '',
         category: '',
-        image_url: ''
+        image_url: '',
+        location: ''
       });
       fetchProducts();
     } catch (error: any) {
@@ -326,10 +330,24 @@ export function FarmerDashboard() {
                 />
               </div>
               
+              <div>
+                <Label htmlFor="location">Farm Location *</Label>
+                <Input
+                  id="location"
+                  value={newProduct.location}
+                  onChange={(e) => setNewProduct({ ...newProduct, location: e.target.value })}
+                  placeholder="e.g., Ratnagiri, Maharashtra"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Products will be visible to customers in this location
+                </p>
+              </div>
+              
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-tropical hover:opacity-90"
-                disabled={isAddingProduct}
+                disabled={isAddingProduct || !newProduct.location}
               >
                 {isAddingProduct ? 'Adding...' : 'Add Product'}
               </Button>
