@@ -37,12 +37,10 @@ const Index = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        // Get products and then separately get farmer info
         const { data: products, error } = await supabase
           .from('products')
-          .select(`
-            *,
-            farmers!inner(*)
-          `)
+          .select('*')
           .eq('is_available', true)
           .order('created_at', { ascending: false })
           .limit(20);
@@ -52,22 +50,42 @@ const Index = () => {
           return;
         }
 
+        // Get all unique farmer emails
+        const farmerEmails = [...new Set(products?.map(p => p.farmer_email).filter(Boolean))] as string[];
+        
+        // Fetch farmer details
+        const farmersData: { [key: string]: any } = {};
+        if (farmerEmails.length > 0) {
+          const { data: farmers } = await supabase
+            .from('farmers')
+            .select('*')
+            .in('email', farmerEmails);
+          
+          farmers?.forEach(farmer => {
+            farmersData[farmer.email] = farmer;
+          });
+        }
+
         // Transform database products to match ProductCard interface
-        const transformedProducts = products?.map((product) => ({
-          id: product.id,
-          name: product.name,
-          variety: product.name, // Using name as variety for now
-          price: Number((product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)), // Calculate final price with margin
-          image: productImageMap[product.name] || alphonsoImage, // Fallback to alphonso image
-          farmer: {
-            name: product.farmers?.name || "Verified Farmer",
-            location: product.farmers?.location || "India",
-            rating: 4.8
-          },
-          farmerLocation: product.farmers?.location || "India",
-          inStock: product.stock > 0,
-          organic: product.category === "Premium" // Consider premium as organic
-        })) || [];
+        const transformedProducts = products?.map((product) => {
+          const farmer = farmersData[product.farmer_email];
+          
+          return {
+            id: product.id,
+            name: product.name,
+            variety: product.name, // Using name as variety for now
+            price: Number((product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)), // Calculate final price with margin
+            image: productImageMap[product.name] || alphonsoImage, // Fallback to alphonso image
+            farmer: {
+              name: farmer?.name || "Verified Farmer",
+              location: farmer?.location || "India",
+              rating: 4.8
+            },
+            farmerLocation: farmer?.location || "India",
+            inStock: product.stock > 0,
+            organic: product.category === "Premium" // Consider premium as organic
+          };
+        }).filter(product => product.farmerLocation && product.farmerLocation !== "India") || []; // Only show products with valid farmer locations
 
         setFeaturedProducts(transformedProducts);
       } catch (error) {

@@ -148,6 +148,7 @@ export type Database = {
           category: string | null
           created_at: string
           description: string | null
+          farmer_email: string | null
           farmer_id: string | null
           id: string
           image_url: string | null
@@ -162,6 +163,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          farmer_email?: string | null
           farmer_id?: string | null
           id?: string
           image_url?: string | null
@@ -176,6 +178,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          farmer_email?: string | null
           farmer_id?: string | null
           id?: string
           image_url?: string | null

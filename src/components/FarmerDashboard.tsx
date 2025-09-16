@@ -63,6 +63,7 @@ export function FarmerDashboard() {
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('farmer_email', user?.email) // Only show current farmer's products
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -95,7 +96,8 @@ export function FarmerDashboard() {
             stock: Number(newProduct.stock),
             category: newProduct.category || 'Mango',
             image_url: newProduct.image_url,
-            is_available: true
+            is_available: true,
+            farmer_email: user?.email // Link product to current farmer
           }
         ]);
 
