@@ -211,7 +211,7 @@ export function LocationAutocomplete({
   };
 
   const handleInputFocus = () => {
-    if (value && filteredLocations.length > 0 && !disabled) {
+    if (!disabled) {
       setIsOpen(true);
     }
   };
