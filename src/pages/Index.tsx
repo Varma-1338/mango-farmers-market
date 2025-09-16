@@ -142,9 +142,10 @@ const Index = () => {
       : true;
     
     // Apply location filter - show products from farmers within delivery range
-    const matchesLocation = customerLocation 
-      ? isWithinDeliveryRange(product.farmerLocation, customerLocation)
-      : true; // Show all if no customer location set
+    // If no customer location is set, show all products
+    // If customer location is set, filter by delivery range
+    const matchesLocation = !customerLocation || 
+      isWithinDeliveryRange(product.farmerLocation, customerLocation);
     
     return matchesSearch && matchesLocation;
   });

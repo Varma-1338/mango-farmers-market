@@ -7,12 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Eye, Package, TrendingUp, IndianRupee, Settings, ArrowLeft, ShoppingBag } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Package, TrendingUp, IndianRupee, Settings, ArrowLeft, ShoppingBag, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileSettings } from './ProfileSettings';
 import { FarmerOrders } from './FarmerOrders';
+import { FarmerLocationSettings } from './FarmerLocationSettings';
 import { LocationAutocomplete } from './LocationAutocomplete';
 
 interface Product {
@@ -42,7 +43,7 @@ export function FarmerDashboard() {
   const [loading, setLoading] = useState(true);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'orders' | 'settings'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'orders' | 'settings' | 'location'>('dashboard');
   const [newProduct, setNewProduct] = useState<NewProduct>({
     name: '',
     description: '',
@@ -192,6 +193,24 @@ export function FarmerDashboard() {
     );
   }
 
+  if (currentView === 'location') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </div>
+        <FarmerLocationSettings />
+      </div>
+    );
+  }
+
   if (currentView === 'orders') {
     return (
       <div className="space-y-6">
@@ -237,6 +256,15 @@ export function FarmerDashboard() {
           >
             <ShoppingBag className="h-4 w-4" />
             View Orders
+          </Button>
+          
+          <Button 
+            variant="outline"
+            onClick={() => setCurrentView('location')}
+            className="flex items-center gap-2"
+          >
+            <MapPin className="h-4 w-4" />
+            Update Location
           </Button>
           
           <Dialog>
