@@ -38,7 +38,7 @@ export function LocationSelector({ onLocationSelect, onClose, currentLocation }:
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
@@ -61,6 +61,7 @@ export function LocationSelector({ onLocationSelect, onClose, currentLocation }:
                 value={location}
                 onChange={setLocation}
                 placeholder="Type to search cities, states..."
+                autoFocus
               />
             </div>
             

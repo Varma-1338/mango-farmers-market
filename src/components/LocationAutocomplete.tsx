@@ -11,6 +11,7 @@ interface LocationAutocompleteProps {
   required?: boolean;
   className?: string;
   disabled?: boolean;
+  autoFocus?: boolean;
 }
 
 // Comprehensive list of Indian cities and locations
@@ -164,7 +165,8 @@ export function LocationAutocomplete({
   label,
   required = false,
   className = "",
-  disabled = false
+  disabled = false,
+  autoFocus = false
 }: LocationAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
@@ -219,6 +221,11 @@ export function LocationAutocomplete({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsOpen(false);
+    } else if (e.key === 'Enter' && value.trim()) {
+      e.preventDefault();
+      onChange(value.trim());
+      setIsOpen(false);
+      inputRef.current?.blur();
     }
   };
 
@@ -242,16 +249,31 @@ export function LocationAutocomplete({
           placeholder={placeholder}
           required={required}
           disabled={disabled}
+          autoFocus={autoFocus}
           className="pr-8"
         />
         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
       </div>
 
-      {isOpen && !disabled && filteredLocations.length > 0 && (
+      {isOpen && !disabled && value.trim() && (
         <div 
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute top-full left-0 right-0 z-[60] mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-auto"
         >
+          {/* Always show "Use custom location" option when typing */}
+          {value.trim() && !filteredLocations.some(loc => loc.toLowerCase() === value.toLowerCase()) && (
+            <div
+              className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground text-sm transition-colors border-b border-border"
+              onClick={() => handleLocationSelect(value.trim())}
+            >
+              <div className="flex items-center gap-2">
+                <MapPin className="h-3 w-3 text-muted-foreground" />
+                <span className="font-medium">Use "{value.trim()}" as location</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Show filtered suggestions */}
           {filteredLocations.map((location, index) => (
             <div
               key={index}
