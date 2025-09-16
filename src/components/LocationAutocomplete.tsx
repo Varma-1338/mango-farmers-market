@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LocationAutocompleteProps {
   value: string;
@@ -170,19 +171,66 @@ export function LocationAutocomplete({
 }: LocationAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
+  const [databaseLocations, setDatabaseLocations] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Fetch locations from database
+  useEffect(() => {
+    const fetchDatabaseLocations = async () => {
+      try {
+        // Get locations from farmers table
+        const { data: farmerLocations } = await supabase
+          .from('farmers')
+          .select('location')
+          .not('location', 'is', null)
+          .neq('location', '');
+
+        // Get locations from products table  
+        const { data: productLocations } = await supabase
+          .from('products')
+          .select('location')
+          .not('location', 'is', null)
+          .neq('location', '');
+
+        // Combine and deduplicate locations
+        const allDbLocations = [
+          ...(farmerLocations?.map(f => f.location) || []),
+          ...(productLocations?.map(p => p.location) || [])
+        ];
+        
+        const uniqueDbLocations = [...new Set(allDbLocations)].filter(Boolean) as string[];
+        setDatabaseLocations(uniqueDbLocations);
+      } catch (error) {
+        console.error('Error fetching database locations:', error);
+      }
+    };
+
+    fetchDatabaseLocations();
+  }, []);
+
   useEffect(() => {
     if (value) {
-      const filtered = INDIAN_LOCATIONS.filter(location =>
-        location.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 8); // Limit to 8 suggestions
-      setFilteredLocations(filtered);
+      const searchTerm = value.toLowerCase();
+      
+      // First prioritize database locations (locations where farmers/products exist)
+      const dbMatches = databaseLocations.filter(location =>
+        location.toLowerCase().includes(searchTerm)
+      );
+      
+      // Then add static locations that don't already exist in db matches
+      const staticMatches = INDIAN_LOCATIONS.filter(location =>
+        location.toLowerCase().includes(searchTerm) &&
+        !dbMatches.some(dbLoc => dbLoc.toLowerCase() === location.toLowerCase())
+      );
+      
+      // Combine with database locations first (prioritized)
+      const combined = [...dbMatches, ...staticMatches].slice(0, 8);
+      setFilteredLocations(combined);
     } else {
       setFilteredLocations([]);
     }
-  }, [value]);
+  }, [value, databaseLocations]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -273,19 +321,28 @@ export function LocationAutocomplete({
             </div>
           )}
           
-          {/* Show filtered suggestions */}
-          {filteredLocations.map((location, index) => (
-            <div
-              key={index}
-              className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground text-sm transition-colors"
-              onClick={() => handleLocationSelect(location)}
-            >
-              <div className="flex items-center gap-2">
-                <MapPin className="h-3 w-3 text-muted-foreground" />
-                {location}
+          {/* Show filtered suggestions with database locations prioritized */}
+          {filteredLocations.map((location, index) => {
+            const isFromDatabase = databaseLocations.some(dbLoc => 
+              dbLoc.toLowerCase() === location.toLowerCase()
+            );
+            
+            return (
+              <div
+                key={index}
+                className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground text-sm transition-colors"
+                onClick={() => handleLocationSelect(location)}
+              >
+                <div className="flex items-center gap-2">
+                  <MapPin className={`h-3 w-3 ${isFromDatabase ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className={isFromDatabase ? 'font-medium' : ''}>{location}</span>
+                  {isFromDatabase && (
+                    <span className="text-xs text-primary ml-auto">• Available</span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
       
