@@ -201,7 +201,7 @@ export function LocationAutocomplete({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
-    setIsOpen(newValue.length > 0);
+    setIsOpen(true); // Always show dropdown when typing
   };
 
   const handleLocationSelect = (location: string) => {
