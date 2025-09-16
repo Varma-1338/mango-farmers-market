@@ -1,10 +1,12 @@
-import { Search, ShoppingCart, User, Menu, ArrowLeft, LogOut } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, ArrowLeft, LogOut, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation as useLocationHook } from "@/contexts/LocationContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { LocationSelector } from "@/components/LocationSelector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,9 +18,11 @@ import {
 export function Header() {
   const { getTotalItems, setIsCartOpen } = useCart();
   const { signOut, profile, isAdmin, isFarmer } = useAuth();
+  const { customerLocation, setCustomerLocation } = useLocationHook();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLocationSelector, setShowLocationSelector] = useState(false);
   
   const isDashboard = location.pathname === '/dashboard';
   
@@ -73,6 +77,21 @@ export function Header() {
           
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* Location selector */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setShowLocationSelector(true)}
+              className="hidden md:flex items-center gap-1"
+            >
+              <MapPin className="h-4 w-4" />
+              {customerLocation ? (
+                <span className="max-w-32 truncate">{customerLocation.split(',')[0]}</span>
+              ) : (
+                'Set Location'
+              )}
+            </Button>
+            
             {/* Search button for mobile */}
             <Button variant="ghost" size="icon" className="md:hidden">
               <Search className="h-5 w-5" />
@@ -135,11 +154,26 @@ export function Header() {
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  setShowLocationSelector(true);
+                  setIsMobileMenuOpen(false);
+                }}>
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Set Location
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
       </div>
+      
+      {showLocationSelector && (
+        <LocationSelector
+          currentLocation={customerLocation}
+          onLocationSelect={setCustomerLocation}
+          onClose={() => setShowLocationSelector(false)}
+        />
+      )}
     </header>
   );
 }

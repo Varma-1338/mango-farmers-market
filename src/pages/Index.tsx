@@ -7,7 +7,10 @@ import { Header } from "@/components/Header";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ContactForm } from "@/components/ContactForm";
 import { TrackOrderModal } from "@/components/TrackOrderModal";
+import { LocationSelector } from "@/components/LocationSelector";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocation } from "@/contexts/LocationContext";
+import { isWithinDeliveryRange } from "@/utils/locationUtils";
 
 import heroImage from "@/assets/hero-mangoes.jpg";
 import alphonsoImage from "@/assets/alphonso-mango.jpg";
@@ -20,6 +23,8 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isTrackOrderModalOpen, setIsTrackOrderModalOpen] = useState(false);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+  const { customerLocation, setCustomerLocation } = useLocation();
 
   // Map product names to images
   const productImageMap: { [key: string]: string } = {
@@ -34,10 +39,13 @@ const Index = () => {
         setLoading(true);
         const { data: products, error } = await supabase
           .from('products')
-          .select('*')
+          .select(`
+            *,
+            farmers!inner(*)
+          `)
           .eq('is_available', true)
           .order('created_at', { ascending: false })
-          .limit(6);
+          .limit(20);
 
         if (error) {
           console.error('Error fetching products:', error);
@@ -52,10 +60,11 @@ const Index = () => {
           price: Number((product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)), // Calculate final price with margin
           image: productImageMap[product.name] || alphonsoImage, // Fallback to alphonso image
           farmer: {
-            name: "Verified Farmer", // Default farmer info
-            location: "India",
+            name: product.farmers?.name || "Verified Farmer",
+            location: product.farmers?.location || "India",
             rating: 4.8
           },
+          farmerLocation: product.farmers?.location || "India",
           inStock: product.stock > 0,
           organic: product.category === "Premium" // Consider premium as organic
         })) || [];
@@ -70,6 +79,16 @@ const Index = () => {
 
     fetchProducts();
   }, []);
+
+  // Show location prompt after products load if no location is set
+  useEffect(() => {
+    if (!loading && !customerLocation && featuredProducts.length > 0) {
+      const timer = setTimeout(() => {
+        setShowLocationPrompt(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, customerLocation, featuredProducts.length]);
 
   // Listen for global search events from Header
   useEffect(() => {
@@ -95,13 +114,21 @@ const Index = () => {
     }
   ];
 
-  // Apply search filters
-  const filteredProducts = searchTerm
-    ? featuredProducts.filter((p) =>
-        [p.name, p.variety, p.farmer.name, p.farmer.location]
+  // Apply search and location filters
+  const filteredProducts = featuredProducts.filter((product) => {
+    // Apply search filter
+    const matchesSearch = searchTerm
+      ? [product.name, product.variety, product.farmer.name, product.farmer.location]
           .some((f) => f.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
-    : featuredProducts;
+      : true;
+    
+    // Apply location filter - show products from farmers within delivery range
+    const matchesLocation = customerLocation 
+      ? isWithinDeliveryRange(product.farmerLocation, customerLocation)
+      : true; // Show all if no customer location set
+    
+    return matchesSearch && matchesLocation;
+  });
 
   const filteredFarmers = searchTerm
     ? featuredFarmers.filter((f) =>
@@ -304,6 +331,17 @@ const Index = () => {
         isOpen={isTrackOrderModalOpen} 
         onClose={() => setIsTrackOrderModalOpen(false)} 
       />
+      
+      {showLocationPrompt && (
+        <LocationSelector
+          currentLocation={customerLocation}
+          onLocationSelect={(location) => {
+            setCustomerLocation(location);
+            setShowLocationPrompt(false);
+          }}
+          onClose={() => setShowLocationPrompt(false)}
+        />
+      )}
     </div>
   );
 };
