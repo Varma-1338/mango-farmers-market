@@ -7,9 +7,10 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, Upload, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Product {
   id: string;
@@ -22,15 +23,18 @@ interface Product {
   is_available: boolean;
   category: string | null;
   farmer_id: string | null;
+  farmer_email: string | null;
 }
 
 export function ProductManagement() {
+  const { user, profile } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [farmerLocation, setFarmerLocation] = useState<string>('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -39,19 +43,54 @@ export function ProductManagement() {
     margin_percentage: '',
     category: '',
     stock: '',
-    is_available: true
+    is_available: true,
+    location: ''
   });
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+    if (profile?.role === 'farmer') {
+      fetchFarmerLocation();
+    }
+  }, [profile]);
+
+  const fetchFarmerLocation = async () => {
+    if (!user?.email) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('farmers')
+        .select('location')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching farmer location:', error);
+        return;
+      }
+
+      if (data?.location) {
+        setFarmerLocation(data.location);
+        setFormData(prev => ({ ...prev, location: data.location }));
+      }
+    } catch (error) {
+      console.error('Error fetching farmer location:', error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
+
+      // If farmer, only show their products
+      if (profile?.role === 'farmer' && user?.email) {
+        query = query.eq('farmer_email', user.email);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setProducts(data || []);
@@ -109,7 +148,10 @@ export function ProductManagement() {
         image_url: imageUrl,
         stock: parseInt(formData.stock),
         is_available: formData.is_available,
-        category: formData.category || null
+        category: formData.category || null,
+        ...(profile?.role === 'farmer' && user?.email && {
+          farmer_email: user.email
+        })
       };
 
       if (editingProduct) {
@@ -163,7 +205,8 @@ export function ProductManagement() {
       margin_percentage: '',
       category: '',
       stock: '',
-      is_available: true
+      is_available: true,
+      location: farmerLocation
     });
     setEditingProduct(null);
     setShowAddDialog(false);
@@ -179,7 +222,8 @@ export function ProductManagement() {
       margin_percentage: product.margin_percentage?.toString() || '0',
       category: product.category || '',
       stock: product.stock.toString(),
-      is_available: product.is_available
+      is_available: product.is_available,
+      location: farmerLocation
     });
     setShowAddDialog(true);
   };
@@ -285,6 +329,30 @@ export function ProductManagement() {
                 </Select>
               </div>
 
+              {profile?.role === 'farmer' && (
+                <div className="space-y-2">
+                  <Label htmlFor="location" className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Farm Location
+                  </Label>
+                  <Input
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    placeholder="e.g., Ratnagiri, Maharashtra"
+                    className={!formData.location ? 'border-destructive' : ''}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Products will be visible to customers in this location
+                  </p>
+                  {!farmerLocation && (
+                    <p className="text-xs text-destructive">
+                      Please update your farmer profile with your farm location first
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="image">Product Image</Label>
                 <Input
@@ -305,7 +373,10 @@ export function ProductManagement() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button type="submit" disabled={uploading}>
+                <Button 
+                  type="submit" 
+                  disabled={uploading || (profile?.role === 'farmer' && !formData.location)}
+                >
                   {uploading ? 'Uploading...' : editingProduct ? 'Update' : 'Add'} Product
                 </Button>
                 <Button type="button" variant="outline" onClick={resetForm}>
