@@ -8,6 +8,7 @@ import { MapPin, Save, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { LocationAutocomplete } from './LocationAutocomplete';
 
 interface FarmerProfile {
   id?: string;
@@ -163,12 +164,12 @@ export function FarmerLocationSettings() {
           </div>
 
           <div>
-            <Label htmlFor="location">Farm Location *</Label>
-            <Input
-              id="location"
+            <LocationAutocomplete
               value={farmerProfile.location}
-              onChange={(e) => setFarmerProfile(prev => ({ ...prev, location: e.target.value }))}
+              onChange={(value) => setFarmerProfile(prev => ({ ...prev, location: value }))}
+              label="Farm Location"
               placeholder="e.g., Ratnagiri, Maharashtra"
+              required
               disabled={!isEditing}
               className={!farmerProfile.location ? 'border-destructive' : ''}
             />

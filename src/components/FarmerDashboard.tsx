@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileSettings } from './ProfileSettings';
 import { FarmerOrders } from './FarmerOrders';
+import { LocationAutocomplete } from './LocationAutocomplete';
 
 interface Product {
   id: string;
@@ -331,15 +332,14 @@ export function FarmerDashboard() {
               </div>
               
               <div>
-                <Label htmlFor="location">Farm Location *</Label>
-                <Input
-                  id="location"
+                <LocationAutocomplete
                   value={newProduct.location}
-                  onChange={(e) => setNewProduct({ ...newProduct, location: e.target.value })}
+                  onChange={(value) => setNewProduct({ ...newProduct, location: value })}
+                  label="Farm Location"
                   placeholder="e.g., Ratnagiri, Maharashtra"
                   required
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Products will be visible to customers in this location
                 </p>
               </div>

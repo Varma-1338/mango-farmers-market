@@ -11,6 +11,7 @@ import { Plus, Edit2, Trash2, Upload, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { LocationAutocomplete } from './LocationAutocomplete';
 
 interface Product {
   id: string;
@@ -332,14 +333,10 @@ export function ProductManagement() {
 
               {profile?.role === 'farmer' && (
                 <div className="space-y-2">
-                  <Label htmlFor="location" className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    Farm Location
-                  </Label>
-                  <Input
-                    id="location"
+                  <LocationAutocomplete
                     value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    onChange={(value) => setFormData({ ...formData, location: value })}
+                    label="Farm Location"
                     placeholder="e.g., Ratnagiri, Maharashtra"
                     className={!formData.location ? 'border-destructive' : ''}
                   />

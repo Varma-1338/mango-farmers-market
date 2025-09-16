@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { MapPin, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { LocationAutocomplete } from './LocationAutocomplete';
 
 interface LocationSelectorProps {
   onLocationSelect: (location: string) => void;
@@ -55,11 +55,10 @@ export function LocationSelector({ onLocationSelect, onClose, currentLocation }:
           </p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
+            <LocationAutocomplete
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={setLocation}
               placeholder="Enter your city and state"
-              className="w-full"
             />
             <Button type="submit" className="w-full" disabled={!location.trim()}>
               Set Location
