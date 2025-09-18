@@ -147,6 +147,13 @@ const Index = () => {
     const matchesLocation = !customerLocation || 
       isWithinDeliveryRange(product.farmerLocation, customerLocation);
     
+    // Debug location filtering
+    if (customerLocation) {
+      console.log('Filtering for customer location:', customerLocation);
+      console.log('Product farmer location:', product.farmerLocation);
+      console.log('Location match result:', matchesLocation);
+    }
+    
     return matchesSearch && matchesLocation;
   });
 

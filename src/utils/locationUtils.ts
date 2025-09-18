@@ -36,6 +36,14 @@ export function extractCityState(location: string): [string, string] {
 export function isWithinDeliveryRange(farmerLocation: string, customerLocation: string, maxDistance: number = 100): boolean {
   if (!customerLocation) return true; // Show all if no customer location
   
+  // Special case: if farmer location is just "India" or very generic, show all products
+  // This allows products with generic farmer locations to be available everywhere in India
+  const normalizedFarmerLocation = normalizeLocation(farmerLocation);
+  if (normalizedFarmerLocation === 'india' || normalizedFarmerLocation === '') {
+    return true;
+  }
+  
   const distance = calculateLocationDistance(farmerLocation, customerLocation);
+  console.log(`Distance between ${farmerLocation} and ${customerLocation}: ${distance}km`);
   return distance <= maxDistance;
 }
