@@ -59,10 +59,10 @@ export function UserDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5 text-primary" />
-              Shop Mangoes
+              Shop Vegetables
             </CardTitle>
             <CardDescription>
-              Browse our fresh selection of premium mangoes
+              Browse our fresh selection of premium vegetables
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -111,7 +111,7 @@ export function UserDashboard() {
               My Orders
             </CardTitle>
             <CardDescription>
-              Track your mango orders and delivery status
+              Track your vegetable orders and delivery status
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -132,7 +132,7 @@ export function UserDashboard() {
               Favorites
             </CardTitle>
             <CardDescription>
-              Your saved mango varieties and farmers
+              Your saved vegetable varieties and farmers
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -172,7 +172,7 @@ export function UserDashboard() {
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
           <CardDescription>
-            Everything you need to get the freshest mangoes
+            Everything you need to get the freshest vegetables
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -183,7 +183,7 @@ export function UserDashboard() {
               onClick={() => navigate('/')}
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
-              Browse Mangoes
+              Browse Vegetables
             </Button>
             <Button 
               size="lg" 

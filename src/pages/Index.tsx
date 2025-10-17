@@ -177,11 +177,11 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 animate-fade-in">
               <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
-                Fresh Mangoes
+                Fresh Vegetables
                 <span className="block text-primary">Direct from Farmers</span>
               </h1>
               <p className="text-xl text-muted-foreground max-w-lg">
-                Experience the authentic taste of premium mangoes sourced directly from certified farmers across India.
+                Experience the authentic taste of premium vegetables sourced directly from certified farmers across India.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
@@ -205,7 +205,7 @@ const Index = () => {
             <div className="relative animate-slide-up">
               <img 
                 src={heroImage} 
-                alt="Fresh mangoes" 
+                alt="Fresh vegetables" 
                 className="w-full h-[400px] lg:h-[500px] object-cover rounded-2xl shadow-warm"
               />
             </div>
@@ -229,7 +229,7 @@ const Index = () => {
                 <Shield className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold">Quality Assured</h3>
-              <p className="text-muted-foreground">Every mango is hand-picked and quality checked by our farmers</p>
+              <p className="text-muted-foreground">Every vegetable is hand-picked and quality checked by our farmers</p>
             </div>
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-gradient-sunset rounded-full flex items-center justify-center mx-auto">
@@ -246,8 +246,8 @@ const Index = () => {
       <section id="featured-products" className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Featured Mangoes</h2>
-            <p className="text-muted-foreground">Discover our premium selection of mangoes from verified farmers</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Featured Vegetables</h2>
+            <p className="text-muted-foreground">Discover our premium selection of vegetables from verified farmers</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading ? (
@@ -279,7 +279,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">Meet Our Farmers</h2>
-            <p className="text-muted-foreground">Supporting local farmers and bringing you the best mangoes</p>
+            <p className="text-muted-foreground">Supporting local farmers and bringing you the best vegetables</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredFarmers.length > 0 ? (
@@ -315,16 +315,16 @@ const Index = () => {
                 <div className="w-8 h-8 bg-gradient-tropical rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">M</span>
                 </div>
-                <span className="font-bold text-xl">MangoMarket</span>
+                <span className="font-bold text-xl">VeggieMarket</span>
               </div>
               <p className="text-white/80">
-                Connecting farmers with customers for the freshest mango experience.
+                Connecting farmers with customers for the freshest vegetable experience.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Shop</h3>
               <ul className="space-y-2 text-white/80">
-                <li><button onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">All Mangoes</button></li>
+                <li><button onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">All Vegetables</button></li>
                 <li><button onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Organic Only</button></li>
                 <li><button onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">By Variety</button></li>
                 <li><button onClick={() => document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">By Location</button></li>
@@ -333,7 +333,7 @@ const Index = () => {
             <div>
               <h3 className="font-semibold mb-4">For Farmers</h3>
               <ul className="space-y-2 text-white/80">
-                <li><button onClick={() => document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Sell Your Mangoes</button></li>
+                <li><button onClick={() => document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Sell Your Vegetables</button></li>
                 <li><button onClick={() => document.getElementById('featured-farmers')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Farmer Portal</button></li>
                 <li><button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Support</button></li>
               </ul>
@@ -349,7 +349,7 @@ const Index = () => {
             </div>
           </div>
           <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60">
-            <p>&copy; 2024 MangoMarket. All rights reserved.</p>
+            <p>&copy; 2024 VeggieMarket. All rights reserved.</p>
           </div>
         </div>
       </footer>

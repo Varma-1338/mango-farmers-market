@@ -244,7 +244,7 @@ export function FarmerManagement() {
                     id="specialization"
                     value={formData.specialization}
                     onChange={(e) => handleInputChange('specialization', e.target.value)}
-                    placeholder="e.g., Alphonso Mangoes"
+                    placeholder="e.g., Organic Tomatoes"
                   />
                 </div>
 

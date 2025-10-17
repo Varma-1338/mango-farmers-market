@@ -62,7 +62,7 @@ export function Header() {
                 <div className="w-8 h-8 bg-gradient-tropical rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">M</span>
                 </div>
-                <span className="font-bold text-xl text-foreground">MangoMarket</span>
+                <span className="font-bold text-xl text-foreground">VeggieMarket</span>
               </div>
             </div>
             
@@ -71,7 +71,7 @@ export function Header() {
               <form onSubmit={handleSearch} className="relative w-full">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input 
-                  placeholder="Search mangoes and farmers (name, variety, location)" 
+                  placeholder="Search vegetables and farmers (name, variety, location)" 
                   className="pl-10 pr-4"
                 />
               </form>

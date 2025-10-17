@@ -127,7 +127,7 @@ export function UserFavorites() {
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">
                 <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No favorites yet. Start exploring and save your favorite mangoes and farmers!</p>
+                <p>No favorites yet. Start exploring and save your favorite vegetables and farmers!</p>
               </CardContent>
             </Card>
           </div>

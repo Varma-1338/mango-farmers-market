@@ -98,7 +98,7 @@ export function FarmerDashboard() {
             description: newProduct.description,
             price: Number(newProduct.price),
             stock: Number(newProduct.stock),
-            category: newProduct.category || 'Mango',
+            category: newProduct.category || 'Vegetable',
             image_url: newProduct.image_url,
             is_available: true,
             farmer_email: user?.email, // Link product to current farmer
@@ -245,7 +245,7 @@ export function FarmerDashboard() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Farmer Dashboard</h2>
-          <p className="text-muted-foreground">Manage your mango products and sales</p>
+          <p className="text-muted-foreground">Manage your vegetable products and sales</p>
         </div>
         
         <div className="flex gap-2">
@@ -278,7 +278,7 @@ export function FarmerDashboard() {
             <DialogHeader>
               <DialogTitle>Add New Product</DialogTitle>
               <DialogDescription>
-                Add a new mango variety to your marketplace
+                Add a new vegetable variety to your marketplace
               </DialogDescription>
             </DialogHeader>
             
@@ -300,7 +300,7 @@ export function FarmerDashboard() {
                   id="description"
                   value={newProduct.description}
                   onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                  placeholder="Describe your mango variety..."
+                  placeholder="Describe your vegetable variety..."
                   rows={3}
                 />
               </div>
@@ -441,13 +441,13 @@ export function FarmerDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>Your Products</CardTitle>
-          <CardDescription>Manage your mango inventory and pricing</CardDescription>
+          <CardDescription>Manage your vegetable inventory and pricing</CardDescription>
         </CardHeader>
         <CardContent>
           {products.length === 0 ? (
             <div className="text-center py-8">
               <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground mb-4">No products yet. Add your first mango variety!</p>
+              <p className="text-muted-foreground mb-4">No products yet. Add your first vegetable variety!</p>
             </div>
           ) : (
             <div className="space-y-4">

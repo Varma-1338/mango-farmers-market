@@ -195,7 +195,7 @@ export function FarmerLocationSettings() {
               id="specialization"
               value={farmerProfile.specialization}
               onChange={(e) => setFarmerProfile(prev => ({ ...prev, specialization: e.target.value }))}
-              placeholder="e.g., Alphonso Mangoes, Organic Farming"
+              placeholder="e.g., Organic Tomatoes, Leafy Greens"
               disabled={!isEditing}
             />
           </div>
@@ -265,7 +265,7 @@ export function FarmerLocationSettings() {
               ⚠️ Location Required
             </p>
             <p className="text-sm text-muted-foreground">
-              You must set your farm location for customers to see your products. Only customers in your delivery area will be able to view and purchase your mangoes.
+              You must set your farm location for customers to see your products. Only customers in your delivery area will be able to view and purchase your vegetables.
             </p>
           </div>
         )}

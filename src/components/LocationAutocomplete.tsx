@@ -110,7 +110,7 @@ const INDIAN_LOCATIONS = [
   'Moradabad, Uttar Pradesh',
   'Saharanpur, Uttar Pradesh',
   'Gorakhpur, Uttar Pradesh',
-  'Mango Belt, Uttar Pradesh',
+  'Vegetable Market, Uttar Pradesh',
   
   // Delhi & NCR
   'Delhi, Delhi',

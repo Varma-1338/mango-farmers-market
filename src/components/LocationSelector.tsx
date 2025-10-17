@@ -27,7 +27,7 @@ export function LocationSelector({ onLocationSelect, onClose, currentLocation }:
     'Ratnagiri, Maharashtra',
     'Alphonso Belt, Maharashtra',
     'Kesar Belt, Gujarat',
-    'Mango Belt, Uttar Pradesh'
+    'Vegetable Market, Uttar Pradesh'
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
