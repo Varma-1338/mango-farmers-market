@@ -75,7 +75,7 @@ const Index = () => {
             name: product.name,
             variety: product.name, // Using name as variety for now
             price: Number((product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)), // Calculate final price with margin
-            image: productImageMap[product.name] || tomatoesImage, // Fallback to tomatoes image
+            image: product.image_url || tomatoesImage, // Use actual product image from database
             farmer: {
               name: farmer?.name || "Verified Farmer",
               location: farmer?.location || "India",
