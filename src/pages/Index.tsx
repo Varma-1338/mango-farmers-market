@@ -12,10 +12,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
 import { isWithinDeliveryRange } from "@/utils/locationUtils";
 
-import heroImage from "@/assets/hero-mangoes.jpg";
-import alphonsoImage from "@/assets/alphonso-mango.jpg";
-import kesarImage from "@/assets/kesar-mango.jpg";
-import hadenImage from "@/assets/haden-mango.jpg";
+import heroImage from "@/assets/hero-vegetables.jpg";
+import tomatoesImage from "@/assets/tomatoes.jpg";
+import leafyGreensImage from "@/assets/leafy-greens.jpg";
+import bellPeppersImage from "@/assets/bell-peppers.jpg";
 import farmerRajImage from "@/assets/farmer-raj.jpg";
 
 const Index = () => {
@@ -28,9 +28,9 @@ const Index = () => {
 
   // Map product names to images
   const productImageMap: { [key: string]: string } = {
-    "Premium Alphonso": alphonsoImage,
-    "Sweet Kesar": kesarImage,
-    "Fresh Haden": hadenImage
+    "Premium Alphonso": tomatoesImage,
+    "Sweet Kesar": leafyGreensImage,
+    "Fresh Haden": bellPeppersImage
   };
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const Index = () => {
             name: product.name,
             variety: product.name, // Using name as variety for now
             price: Number((product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)), // Calculate final price with margin
-            image: productImageMap[product.name] || alphonsoImage, // Fallback to alphonso image
+            image: productImageMap[product.name] || tomatoesImage, // Fallback to tomatoes image
             farmer: {
               name: farmer?.name || "Verified Farmer",
               location: farmer?.location || "India",

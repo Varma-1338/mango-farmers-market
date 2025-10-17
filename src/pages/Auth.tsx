@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
-import heroMangoes from '@/assets/hero-mangoes.jpg';
+import heroVegetables from '@/assets/hero-vegetables.jpg';
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +76,7 @@ export default function Auth() {
     <div
       className="min-h-screen flex items-center justify-center p-4 relative"
       style={{
-        backgroundImage: `url(${heroMangoes})`,
+        backgroundImage: `url(${heroVegetables})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
