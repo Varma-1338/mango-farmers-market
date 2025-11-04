@@ -69,6 +69,7 @@ const Index = () => {
         // Transform database products to match ProductCard interface
         const transformedProducts = products?.map((product) => {
           const farmer = farmersData[product.farmer_email];
+          const displayLocation = (product.location || farmer?.location || 'India') as string;
           
           return {
             id: product.id,
@@ -77,13 +78,13 @@ const Index = () => {
             price: Number((product.price * (1 + (product.margin_percentage || 0) / 100)).toFixed(2)), // Calculate final price with margin
             image: product.image_url || tomatoesImage, // Use actual product image from database
             farmer: {
-              name: farmer?.name || "Verified Farmer",
-              location: farmer?.location || "India",
+              name: farmer?.name || 'Verified Farmer',
+              location: displayLocation,
               rating: 4.8
             },
-            farmerLocation: farmer?.location || "India",
+            farmerLocation: displayLocation,
             inStock: product.stock > 0,
-            organic: product.category === "Premium" // Consider premium as organic
+            organic: product.category === 'Premium' // Consider premium as organic
           };
         }) || [];
 
