@@ -79,7 +79,7 @@ const Index = () => {
             image: product.image_url || tomatoesImage, // Use actual product image from database
             farmer: {
               name: farmer?.name || 'Verified Farmer',
-              location: displayLocation,
+              location: (product.location as string) || (farmer?.location as string) || '',
               rating: 4.8
             },
             farmerLocation: displayLocation,

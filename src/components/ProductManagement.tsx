@@ -23,6 +23,7 @@ interface Product {
   stock: number;
   is_available: boolean;
   category: string | null;
+  location: string | null;
   farmer_id: string | null;
   farmer_email: string | null;
 }
@@ -225,7 +226,7 @@ export function ProductManagement() {
       category: product.category || '',
       stock: product.stock.toString(),
       is_available: product.is_available,
-      location: farmerLocation
+      location: product.location || farmerLocation
     });
     setShowAddDialog(true);
   };
