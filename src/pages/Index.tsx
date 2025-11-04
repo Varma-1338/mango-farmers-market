@@ -69,7 +69,8 @@ const Index = () => {
         // Transform database products to match ProductCard interface
         const transformedProducts = products?.map((product) => {
           const farmer = farmersData[product.farmer_email];
-          const displayLocation = (product.location || farmer?.location || 'India') as string;
+          // Use product location from farm location set during product creation
+          const productLocation = (product.location || farmer?.location || '') as string;
           
           return {
             id: product.id,
@@ -79,10 +80,10 @@ const Index = () => {
             image: product.image_url || tomatoesImage, // Use actual product image from database
             farmer: {
               name: farmer?.name || 'Verified Farmer',
-              location: (product.location as string) || (farmer?.location as string) || '',
+              location: productLocation,
               rating: 4.8
             },
-            farmerLocation: displayLocation,
+            farmerLocation: productLocation,
             inStock: product.stock > 0,
             organic: product.category === 'Premium' // Consider premium as organic
           };
